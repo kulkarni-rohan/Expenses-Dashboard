@@ -98,13 +98,29 @@ topCategoriesDiv.innerHTML = ""; // Clear previous
 if (top3.length === 0) {
 topCategoriesDiv.innerHTML = "<div class='category-item'>None</div>";
 } else {
-top3.forEach(([category, amount]) => {
-  const percent = ((amount / currentTotal) * 100).toFixed(1);
-  const item = document.createElement("div");
-  item.className = "category-item";
-  item.innerHTML = `<span>${category}</span><span>$${amount.toFixed(2)} (${percent}%)</span>`;
-  topCategoriesDiv.appendChild(item);
-});
+  const emojiMap = {
+    "Rent": "🏠",
+    "Groceries": "🛒",
+    "Transportation": "🚌",
+    "Utilities": "💡",
+    "Entertainment": "🎮",
+    "Dining": "🍽️",
+    "Travel": "✈️",
+    "Shopping": "🛍️",
+    "Healthcare": "💊",
+    "Other": "🔹"
+  };
+  
+  top3.forEach(([category, amount]) => {
+    const percent = ((amount / currentTotal) * 100).toFixed(1);
+    const emoji = emojiMap[category] || "📁";
+  
+    const item = document.createElement("div");
+    item.className = "category-item";
+    item.innerHTML = `<span>${emoji} ${category}</span><span>$${amount.toFixed(2)} (${percent}%)</span>`;
+    topCategoriesDiv.appendChild(item);
+  });
+  
 }
 
     document.getElementById("transactionCount").textContent = transactions;
@@ -170,15 +186,18 @@ top3.forEach(([category, amount]) => {
       })
       .on("mouseout", () => tooltip.style("opacity", 0));
 
-    group.selectAll("text")
+      group.selectAll("text")
       .data(pie([...dataMap]))
       .enter()
       .append("text")
       .attr("transform", d => `translate(${arc.centroid(d)})`)
       .attr("text-anchor", "middle")
       .attr("dy", "0.35em")
-      .style("font-size", "11px")
-      .text(d => d.data[0]);
+      .style("font-size", "12px")
+      .style("font-weight", "500")
+      .style("fill", "#1f2937")
+      .text(d => `${d.data[0]} (${((d.data[1] / d3.sum(dataMap.values())) * 100).toFixed(1)}%)`);
+    
   }
 
   function drawBarChart(dataMap) {
@@ -203,14 +222,44 @@ top3.forEach(([category, amount]) => {
 
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
-    g.append("g").call(d3.axisLeft(y));
+    // Y Axis
+g.append("g")
+.call(d3.axisLeft(y))
+.selectAll("text")
+.style("font-size", "12px")
+.style("fill", "#374151");
 
-    g.append("g")
-      .attr("transform", `translate(0,${innerHeight})`)
-      .call(d3.axisBottom(x))
-      .selectAll("text")
-      .attr("transform", "rotate(-30)")
-      .style("text-anchor", "end");
+// Y Axis Label
+g.append("text")
+.attr("text-anchor", "middle")
+.attr("transform", `rotate(-90)`)
+.attr("x", -innerHeight / 2)
+.attr("y", -45)
+.attr("fill", "#374151")
+.style("font-size", "13px")
+.style("font-weight", "bold")
+.text("Expenses ($)");
+
+// X Axis
+g.append("g")
+.attr("transform", `translate(0,${innerHeight})`)
+.call(d3.axisBottom(x))
+.selectAll("text")
+.attr("transform", "rotate(-30)")
+.style("text-anchor", "end")
+.style("font-size", "12px")
+.style("fill", "#374151");
+
+// X Axis Label
+g.append("text")
+.attr("text-anchor", "middle")
+.attr("x", innerWidth / 2)
+.attr("y", innerHeight + 35)
+.attr("fill", "#374151")
+.style("font-size", "13px")
+.style("font-weight", "bold")
+.text("Month");
+
 
     g.selectAll("rect")
       .data([...dataMap])
@@ -232,5 +281,7 @@ top3.forEach(([category, amount]) => {
           .style("top", (event.pageY - 30) + "px");
       })
       .on("mouseout", () => tooltip.style("opacity", 0));
+
+      
   }
 });
