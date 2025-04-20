@@ -10,5 +10,8 @@
 
 ## UI Snapshot
 
-<img width="990" alt="image" src="https://github.com/user-attachments/assets/34ad1e0f-7273-4d9b-956b-be5db0356281" />
+<img width="1155" alt="image" src="https://github.com/user-attachments/assets/9b711695-0456-49ad-aae9-76e3eb67c5d8" />
+<img width="1296" alt="image" src="https://github.com/user-attachments/assets/47403cb1-2a0e-480d-a64d-18c29327bb99" />
+
+
 
