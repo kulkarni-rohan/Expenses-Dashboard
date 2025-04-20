@@ -12,46 +12,12 @@ body {
     color: #2c3e50;
   }
   
-  .chart-container {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 30px;
-    padding: 0 20px 40px;
+  h3 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    color: #1f2937;
   }
   
-  .chart-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-    padding: 20px;
-    width: fit-content;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  .chart-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  }
-  
-  svg {
-    display: block;
-  }
-  
-  .tooltip {
-    position: absolute;
-    background: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    pointer-events: none;
-    font-size: 13px;
-    line-height: 1.4;
-    opacity: 0;
-    transition: all 0.2s ease;
-  }
-  
-  /* ✨ Date filter bar styling */
   .filter-container {
     display: flex;
     justify-content: center;
@@ -88,7 +54,7 @@ body {
   .filter-container button:hover {
     background-color: #1a242f;
   }
-
+  
   .stats-container {
     display: flex;
     justify-content: center;
@@ -137,7 +103,7 @@ body {
   .stat-card .change.green {
     color: #16a34a;
   }
-
+  
   .multi-value {
     font-size: 14px;
     font-weight: 500;
@@ -164,15 +130,46 @@ body {
     color: #111827;
   }
   
-
-  .change.red {
-    color: #dc2626; /* red */
+  .chart-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 0 20px 40px;
   }
   
-  .change.green {
-    color: #16a34a; /* green */
+  .chart-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+    width: fit-content;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-
+  
+  .chart-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  }
+  
+  svg {
+    display: block;
+  }
+  
+  .tooltip {
+    position: absolute;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    pointer-events: none;
+    font-size: 13px;
+    line-height: 1.4;
+    opacity: 0;
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+  
   .legend-container {
     display: flex;
     flex-wrap: wrap;
@@ -197,6 +194,16 @@ body {
     height: 12px;
     border-radius: 50%;
   }
-  
-  
+
+  #calendarHeatmap text {
+    font-family: sans-serif;
+    fill: #374151;
+  }
+
+  #categoryFilter label {
+    display: inline-block;
+    margin: 4px 8px 4px 0;
+    font-size: 13px;
+    color: #374151;
+  }
   
