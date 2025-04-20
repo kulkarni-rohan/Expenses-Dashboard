@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
     drawPieChart(byCategory);
 
     const byMonth = d3.rollup(filteredData, v => d3.sum(v, d => d.amount), d => d3.timeFormat("%b %Y")(d.date));
-    drawBarChart(byMonth);
+    drawBarChart(filteredData);
   }
 
   function updateStats(currentData) {
@@ -200,88 +200,179 @@ topCategoriesDiv.innerHTML = "<div class='category-item'>None</div>";
     
   }
 
-  function drawBarChart(dataMap) {
-    const svg = d3.select("#barChart");
-    const width = +svg.attr("width");
-    const height = +svg.attr("height");
-    const margin = { top: 40, right: 30, bottom: 40, left: 60 };
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
+  let selectedCategories = new Set(); // Persistent set to track visible categories
 
-    const months = [...dataMap.keys()];
-    const values = [...dataMap.values()];
+function drawBarChart(filteredData) {
+  const svg = d3.select("#barChart");
+  const width = +svg.attr("width");
+  const height = +svg.attr("height");
+  const margin = { top: 40, right: 30, bottom: 60, left: 60 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
 
-    const x = d3.scaleBand()
-      .domain(months)
-      .range([0, innerWidth])
-      .padding(0.2);
+  svg.selectAll("*").remove();
+  const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+  if (filteredData.length === 0) return;
 
-    const y = d3.scaleLinear()
-      .domain([0, d3.max(values)]).nice()
-      .range([innerHeight, 0]);
+  const formatter = d3.timeFormat("%Y-%m");
+  const uniqueMonths = new Set(filteredData.map(d => formatter(d.date)));
+  const isSingleMonth = uniqueMonths.size === 1;
+  const groupBy = isSingleMonth
+    ? d3.timeFormat("%d %b")
+    : d3.timeFormat("%b %Y");
 
-    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+  // Group data: { label: { category: amount } }
+  const grouped = d3.rollups(
+    filteredData,
+    v => {
+      const totals = {};
+      v.forEach(d => {
+        if (!totals[d.category]) totals[d.category] = 0;
+        totals[d.category] += d.amount;
+      });
+      return totals;
+    },
+    d => groupBy(d.date)
+  );
 
-    // Y Axis
-g.append("g")
-.call(d3.axisLeft(y))
-.selectAll("text")
-.style("font-size", "12px")
-.style("fill", "#374151");
+  const labels = grouped.map(d => d[0]);
+  const categories = Array.from(new Set(filteredData.map(d => d.category)));
 
-// Y Axis Label
-g.append("text")
-.attr("text-anchor", "middle")
-.attr("transform", `rotate(-90)`)
-.attr("x", -innerHeight / 2)
-.attr("y", -45)
-.attr("fill", "#374151")
-.style("font-size", "13px")
-.style("font-weight", "bold")
-.text("Expenses ($)");
-
-// X Axis
-g.append("g")
-.attr("transform", `translate(0,${innerHeight})`)
-.call(d3.axisBottom(x))
-.selectAll("text")
-.attr("transform", "rotate(-30)")
-.style("text-anchor", "end")
-.style("font-size", "12px")
-.style("fill", "#374151");
-
-// X Axis Label
-g.append("text")
-.attr("text-anchor", "middle")
-.attr("x", innerWidth / 2)
-.attr("y", innerHeight + 35)
-.attr("fill", "#374151")
-.style("font-size", "13px")
-.style("font-weight", "bold")
-.text("Month");
-
-
-    g.selectAll("rect")
-      .data([...dataMap])
-      .enter()
-      .append("rect")
-      .attr("x", d => x(d[0]))
-      .attr("y", d => y(d[1]))
-      .attr("width", x.bandwidth())
-      .attr("height", d => innerHeight - y(d[1]))
-      .attr("fill", "#4e79a7")
-      .on("mouseover", (event, d) => {
-        tooltip
-          .style("opacity", 1)
-          .html(`<strong>${d[0]}</strong><br>$${d[1]}`);
-      })
-      .on("mousemove", (event) => {
-        tooltip
-          .style("left", (event.pageX + 15) + "px")
-          .style("top", (event.pageY - 30) + "px");
-      })
-      .on("mouseout", () => tooltip.style("opacity", 0));
-
-      
+  // Init selectedCategories on first load
+  if (selectedCategories.size === 0) {
+    categories.forEach(c => selectedCategories.add(c));
   }
+
+  const filteredCategories = categories.filter(c => selectedCategories.has(c));
+
+  const color = d3.scaleOrdinal()
+    .domain(categories)
+    .range(d3.schemeSet2);
+
+  const filteredColor = d3.scaleOrdinal()
+    .domain(filteredCategories)
+    .range(d3.schemeSet2);
+
+  // Build stacked data
+  const stackedData = grouped.map(([label, catTotals]) => {
+    const row = { label };
+    categories.forEach(c => {
+      row[c] = catTotals[c] || 0;
+    });
+    return row;
+  });
+
+  const stack = d3.stack().keys(filteredCategories);
+  const series = stack(stackedData);
+
+  const x = d3.scaleBand()
+    .domain(labels)
+    .range([0, innerWidth])
+    .padding(0.2);
+
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(stackedData, d => d3.sum(filteredCategories, c => d[c])) || 1])
+    .nice()
+    .range([innerHeight, 0]);
+
+  // Y Axis
+  g.append("g")
+    .call(d3.axisLeft(y))
+    .selectAll("text")
+    .style("font-size", "12px")
+    .style("fill", "#374151");
+
+  g.append("text")
+    .attr("text-anchor", "middle")
+    .attr("transform", `rotate(-90)`)
+    .attr("x", -innerHeight / 2)
+    .attr("y", -45)
+    .attr("fill", "#374151")
+    .style("font-size", "13px")
+    .style("font-weight", "bold")
+    .text("Expenses ($)");
+
+  // X Axis
+  g.append("g")
+    .attr("transform", `translate(0,${innerHeight})`)
+    .call(d3.axisBottom(x))
+    .selectAll("text")
+    .attr("transform", "rotate(-30)")
+    .style("text-anchor", "end")
+    .style("font-size", "12px")
+    .style("fill", "#374151");
+
+  g.append("text")
+    .attr("text-anchor", "middle")
+    .attr("x", innerWidth / 2)
+    .attr("y", innerHeight + 45)
+    .attr("fill", "#374151")
+    .style("font-size", "13px")
+    .style("font-weight", "bold")
+    .text(isSingleMonth ? "Day" : "Month");
+
+  // Tooltip
+  const tooltip = d3.select("#tooltip");
+
+  // Stacked Bars
+  g.selectAll("g.layer")
+    .data(series)
+    .join("g")
+    .attr("fill", d => filteredColor(d.key))
+    .attr("class", "layer")
+    .selectAll("rect")
+    .data(d => d.map(p => ({ ...p, category: d.key })))
+    .join("rect")
+    .attr("x", d => x(d.data.label))
+    .attr("y", d => y(d[1]))
+    .attr("height", d => y(d[0]) - y(d[1]))
+    .attr("width", x.bandwidth())
+    .on("mouseover", (event, d) => {
+      tooltip
+        .style("opacity", 1)
+        .html(`<strong>${d.category}</strong><br>$${(d[1] - d[0]).toFixed(2)}`);
+    })
+    .on("mousemove", event => {
+      tooltip
+        .style("left", (event.pageX + 15) + "px")
+        .style("top", (event.pageY - 30) + "px");
+    })
+    .on("mouseout", () => tooltip.style("opacity", 0));
+
+  // ✅ LEGEND
+  const legendContainer = document.getElementById("barLegend");
+  legendContainer.innerHTML = ""; // Clear previous
+
+  categories.forEach(cat => {
+    const item = document.createElement("div");
+    item.className = "legend-item";
+
+    const box = document.createElement("span");
+    box.className = "legend-color";
+    box.style.backgroundColor = color(cat);
+    box.style.opacity = selectedCategories.has(cat) ? "1" : "0.3";
+
+    const label = document.createElement("span");
+    label.textContent = cat;
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = selectedCategories.has(cat);
+    checkbox.onchange = () => {
+      if (checkbox.checked) {
+        selectedCategories.add(cat);
+      } else {
+        selectedCategories.delete(cat);
+      }
+      drawBarChart(filteredData); // Redraw with updated categories
+    };
+
+    item.appendChild(checkbox);
+    item.appendChild(box);
+    item.appendChild(label);
+    legendContainer.appendChild(item);
+  });
+}
+
+  
 });
