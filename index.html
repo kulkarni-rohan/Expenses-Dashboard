@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modern Expenses Dashboard</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Expenses Dashboard</h1>
+
+  <!-- 🔍 Filter UI -->
+  <div class="filter-container">
+    <label>From: <input type="date" id="fromDate"></label>
+    <label>To: <input type="date" id="toDate"></label>
+    <button id="applyFilter">Apply Filter</button>
+  </div>
+
+  <!-- 📊 Summary Stats -->
+<div class="stats-container" id="stats">
+    <div class="stat-card">
+      <div class="label">Total Expenses</div>
+      <div class="value" id="totalExpenses">$0.00</div>
+      <div class="change" id="totalExpensesChange">↑ 0.0% vs last period</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Average Monthly</div>
+      <div class="value" id="avgMonthly">$0.00</div>
+      <div class="change" id="avgMonthlyChange">↓ 0.0% vs last period</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">Top Categories</div>
+        <div class="multi-value" id="topCategories">
+          <div class="category-item">None</div>
+        </div>
+      </div>
+      
+    <div class="stat-card">
+      <div class="label">Transactions</div>
+      <div class="value" id="transactionCount">0</div>
+      <div class="change" id="transactionChange">↑ 0.0% vs last period</div>
+    </div>
+  </div>  
+
+  <div class="chart-container">
+    <div class="chart-card">
+      <svg id="pieChart" width="400" height="400"></svg>
+    </div>
+    <div class="chart-card">
+      <svg id="barChart" width="600" height="400"></svg>
+    </div>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+</body>
+</html>
