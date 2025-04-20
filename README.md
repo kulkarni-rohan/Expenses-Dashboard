@@ -7,3 +7,7 @@
 ## Running the files
 1. Download the files
 2. python -m http.server 8000
+
+## UI Snapshot
+
+<img width="1321" alt="image" src="https://github.com/user-attachments/assets/aa2c3908-43db-4881-a3fd-66c3d614ffe5" />
