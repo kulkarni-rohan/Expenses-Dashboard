@@ -7,12 +7,13 @@ document.addEventListener("DOMContentLoaded", function () {
   let fullData = [];
   
   function loadData() {
-    d3.csv("expenses.csv", d => ({
+    d3.csv("Expenses-Temporary-2.csv", d => ({
       date: new Date(d.date),
       category: d.category,
-      amount: +d.amount
+      amount: parseFloat(d.amount.replace(/[$,]/g, '')),
     })).then(data => {
       fullData = data;
+      console.log("FULL DATA: ", fullData);
       const dates = data.map(d => d.date);
       const minDate = d3.min(dates);
       const maxDate = d3.max(dates);
@@ -78,20 +79,6 @@ document.addEventListener("DOMContentLoaded", function () {
     drawCalendarHeatmap(filteredData);
   }
 
-  function drawCharts(filteredData) {
-    pieChart.selectAll("*").remove();
-    barChart.selectAll("*").remove();
-
-    updateStats(filteredData);
-
-    const byCategory = d3.rollup(filteredData, v => d3.sum(v, d => d.amount), d => d.category);
-    drawPieChart(byCategory);
-
-    const byMonth = d3.rollup(filteredData, v => d3.sum(v, d => d.amount), d => d3.timeFormat("%b %Y")(d.date));
-    drawBarChart(filteredData);
-  }
-  
-
   function updateStats(data) {
     const currentTotal = d3.sum(data, d => d.amount);
     const transactions = data.length;
@@ -109,6 +96,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const monthlyAvg = d3.mean([...monthTotals.values()]) || 0;
     const prevMonthTotals = d3.rollup(prevPeriod, v => d3.sum(v, d => d.amount), d => d3.timeFormat("%Y-%m")(d.date));
     const prevMonthlyAvg = d3.mean([...prevMonthTotals.values()]) || 0;
+
+    console.log(monthlyAvg);
+    console.log(prevMonthlyAvg);
   
     const byCategory = d3.rollup(data, v => d3.sum(v, d => d.amount), d => d.category);
     const top3 = [...byCategory.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
@@ -120,9 +110,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const topCategoriesDiv = document.getElementById("topCategories");
     topCategoriesDiv.innerHTML = "";
     const emojiMap = {
-      "Rent": "🏠", "Groceries": "🛒", "Transportation": "🚌",
-      "Utilities": "💡", "Entertainment": "🎮", "Dining": "🍽️",
-      "Travel": "✈️", "Shopping": "🛍️", "Healthcare": "💊", "Other": "🔹"
+      "Rent": "🏠", "Grocery": "🛒", "Travel": "✈️",
+      "Utilities": "💡", "Entertainment": "🎮", "Food": "🍽️", "Shopping": "🛍️", "Health": "💊", "Gas":"⛽", "Investment":"💵", "Charity":"✌️","Electronics":"💻","Family Support":"👨‍👩‍👧‍👦","House":"🏘️","Learning":"📚","Gift":"🎁","Networking":"🫂","Workshops":"🏢","Fees": "💳"
     };
   
     if (top3.length === 0) {
