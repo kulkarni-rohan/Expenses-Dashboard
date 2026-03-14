@@ -62,7 +62,7 @@
     .badge-required { background:var(--danger-light); color:var(--danger); }
     .badge-optional { background:var(--primary-light); color:var(--primary); }
 
-    select, input[type="text"], input[type="search"], input[type="number"] {
+    select, input[type="text"], input[type="search"], input[type="number"], input[type="date"] {
       font-family:'Inter',sans-serif; font-size:13.5px; color:var(--text);
       background:var(--surface2); border:1.5px solid var(--border);
       border-radius:var(--radius-sm); padding:8px 12px; outline:none;
@@ -97,6 +97,22 @@
     .search-icon { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:14px; pointer-events:none; }
     .search-wrap input { padding-left:36px; }
     .filter-bar select { width:auto; flex:1; min-width:140px; }
+    .date-range-wrap { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+    .date-range-wrap input[type="date"] { width:136px; font-size:12.5px; padding:7px 10px; }
+    .date-range-sep { font-size:13px; color:var(--muted); font-weight:500; }
+    .date-active-badge { font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; background:var(--primary-light); color:var(--primary); white-space:nowrap; }
+
+    /* ── INSIGHTS ── */
+    .insights-panel { background:var(--surface); border-radius:var(--radius); padding:20px 24px; margin-bottom:24px; box-shadow:var(--shadow); border:1px solid var(--border); }
+    .insights-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .insights-title { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.7px; }
+    .insights-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:10px; }
+    .insight-chip { display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border-radius:var(--radius-sm); background:var(--surface2); border:1px solid var(--border); transition:transform .15s,box-shadow .15s; cursor:default; }
+    .insight-chip:hover { transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+    .insight-icon { font-size:18px; width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .insight-text { flex:1; min-width:0; }
+    .insight-title { font-size:12.5px; font-weight:600; line-height:1.35; margin-bottom:2px; }
+    .insight-sub { font-size:11px; color:var(--muted); line-height:1.45; }
 
     /* Stats */
     .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; margin-bottom:24px; }
@@ -329,7 +345,21 @@
       <select id="filter-category"><option value="">All Categories</option></select>
       <select id="filter-trip"><option value="">All Trips</option></select>
       <select id="filter-person"><option value="">All People</option></select>
+      <div class="date-range-wrap">
+        <input type="date" id="filter-date-from" title="From date">
+        <span class="date-range-sep">→</span>
+        <input type="date" id="filter-date-to" title="To date">
+      </div>
+      <span id="date-active-badge" class="date-active-badge hidden"></span>
       <button class="btn btn-ghost btn-sm" onclick="clearFilters()">✕ Clear</button>
+    </div>
+
+    <!-- Smart Insights -->
+    <div id="insights-panel" class="insights-panel hidden">
+      <div class="insights-header">
+        <div class="insights-title">✨ Smart Insights</div>
+      </div>
+      <div class="insights-grid" id="insights-grid"></div>
     </div>
 
     <!-- Stats -->
@@ -517,7 +547,7 @@ const TABLE_LABELS = {date:'Date',name:'Expense',amount:'Amount',category:'Categ
 // ═══════════════════════════════════════════
 const state = {
   rows:[],headers:[],colMap:{},pendingData:null,
-  filters:{search:'',category:'',trip:'',person:''},
+  filters:{search:'',category:'',trip:'',person:'',dateFrom:'',dateTo:''},
   sort:{col:'',dir:'asc'},page:0,pageSize:25,charts:{},
   monthData:[],selectedMonthIdx:-1,catMonthData:null,
   budgets:{},colorMap:{},
@@ -652,23 +682,46 @@ function populateHeatmapYear() {
 function setupFilterListeners() {
   document.getElementById('search-input').addEventListener('input',debounce(updateFilters,180));
   ['filter-category','filter-trip','filter-person'].forEach(id=>document.getElementById(id).addEventListener('change',updateFilters));
+  ['filter-date-from','filter-date-to'].forEach(id=>document.getElementById(id).addEventListener('change',updateFilters));
 }
 function updateFilters() {
   state.filters.search=document.getElementById('search-input').value.toLowerCase();
   state.filters.category=document.getElementById('filter-category').value;
   state.filters.trip=document.getElementById('filter-trip').value;
   state.filters.person=document.getElementById('filter-person').value;
+  state.filters.dateFrom=document.getElementById('filter-date-from').value;
+  state.filters.dateTo=document.getElementById('filter-date-to').value;
+  // Update active date badge
+  const badge=document.getElementById('date-active-badge');
+  if(state.filters.dateFrom||state.filters.dateTo){
+    const f=state.filters.dateFrom?new Date(state.filters.dateFrom).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'Start';
+    const t=state.filters.dateTo?new Date(state.filters.dateTo).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'Now';
+    badge.textContent=`${f} – ${t}`;badge.classList.remove('hidden');
+  }else{badge.classList.add('hidden');}
   state.page=0;renderAll();
 }
-function clearFilters(){document.getElementById('search-input').value='';['filter-category','filter-trip','filter-person'].forEach(id=>document.getElementById(id).value='');updateFilters();}
+function clearFilters(){
+  document.getElementById('search-input').value='';
+  ['filter-category','filter-trip','filter-person'].forEach(id=>document.getElementById(id).value='');
+  ['filter-date-from','filter-date-to'].forEach(id=>document.getElementById(id).value='');
+  updateFilters();
+}
 
 function getFiltered() {
-  const{search,category,trip,person}=state.filters;
+  const{search,category,trip,person,dateFrom,dateTo}=state.filters;
+  const fromD=dateFrom?new Date(dateFrom):null;
+  const toD=dateTo?new Date(dateTo+'T23:59:59'):null;
   return state.rows.filter(row=>{
     if(category&&getVal(row,'category')!==category)return false;
     if(trip&&getVal(row,'trip')!==trip)return false;
     if(person&&getPersonName(row)!==person)return false;
     if(search&&!Object.values(row).join(' ').toLowerCase().includes(search))return false;
+    if(fromD||toD){
+      const d=parseDate(getVal(row,'date'));
+      if(!d)return false; // exclude undated rows when a date filter is active
+      if(fromD&&d<fromD)return false;
+      if(toD&&d>toD)return false;
+    }
     return true;
   });
 }
@@ -678,6 +731,7 @@ function renderAll() {
   const total=filtered.reduce((s,r)=>s+parseAmount(getVal(r,'amount')),0);
   document.getElementById('nav-pill').textContent=`${state.rows.length} expenses`;
   document.getElementById('nav-count').textContent=filtered.length<state.rows.length?`Showing ${filtered.length} of ${state.rows.length}`:'';
+  renderInsights(filtered);
   renderStats(filtered,total);
   renderTop3Categories(filtered,total);
   renderCategoryChart(filtered,total);
@@ -995,6 +1049,109 @@ function renderTable(rows) {
 function renderPagination(total){const pages=Math.ceil(total/state.pageSize),pg=document.getElementById('pagination');if(pages<=1){pg.innerHTML='';return;}const nums=[];for(let i=0;i<pages;i++){if(i===0||i===pages-1||Math.abs(i-state.page)<=1)nums.push(i);else if(nums[nums.length-1]!=='…')nums.push('…');}pg.innerHTML=`<span>${total} results · Page ${state.page+1} of ${pages}</span><div class="page-controls"><button class="page-btn" onclick="setPage(${state.page-1})" ${state.page===0?'disabled':''}>‹</button>${nums.map(p=>p==='…'?`<button class="page-btn" disabled>…</button>`:`<button class="page-btn ${p===state.page?'active':''}" onclick="setPage(${p})">${p+1}</button>`).join('')}<button class="page-btn" onclick="setPage(${state.page+1})" ${state.page>=pages-1?'disabled':''}>›</button></div>`;}
 function setPage(p){const t=Math.ceil(getFiltered().length/state.pageSize);state.page=Math.max(0,Math.min(p,t-1));renderTable(getFiltered());}
 function sortTable(col){state.sort.dir=state.sort.col===col?(state.sort.dir==='asc'?'desc':'asc'):'asc';state.sort.col=col;state.page=0;renderTable(getFiltered());}
+
+// ═══════════════════════════════════════════
+//  SMART INSIGHTS
+// ═══════════════════════════════════════════
+function generateInsights(rows) {
+  const insights=[];
+  const total=rows.reduce((s,r)=>s+parseAmount(getVal(r,'amount')),0);
+  if(!rows.length)return insights;
+
+  // Precompute month totals, category-month map, and day-of-week totals
+  const monthTotals={},catMonthMap={},dowTotals=[0,0,0,0,0,0,0],catMap={};
+  rows.forEach(r=>{
+    const amt=parseAmount(getVal(r,'amount'));
+    const cat=getVal(r,'category');
+    if(cat)catMap[cat]=(catMap[cat]||0)+amt;
+    const d=parseDate(getVal(r,'date'));
+    if(d){
+      const mk=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      monthTotals[mk]=(monthTotals[mk]||0)+amt;
+      dowTotals[d.getDay()]+=amt;
+      if(cat){if(!catMonthMap[cat])catMonthMap[cat]={};catMonthMap[cat][mk]=(catMonthMap[cat][mk]||0)+amt;}
+    }
+  });
+  const sortedMonths=Object.keys(monthTotals).sort();
+
+  // 1. Biggest single expense
+  const maxRow=rows.reduce((a,b)=>parseAmount(getVal(a,'amount'))>=parseAmount(getVal(b,'amount'))?a:b);
+  const maxAmt=parseAmount(getVal(maxRow,'amount'));
+  const maxName=getVal(maxRow,'name')||'Unknown expense';
+  insights.push({icon:'💸',bg:'#fef3c7',title:'Biggest single expense',sub:`${fmt$(maxAmt)} — ${maxName}`});
+
+  // 2. Peak spending month
+  if(sortedMonths.length>0){
+    const [topMK,topMA]=Object.entries(monthTotals).sort((a,b)=>b[1]-a[1])[0];
+    const[y,m]=topMK.split('-');
+    const lbl=new Date(+y,+m-1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+    insights.push({icon:'🔥',bg:'#fce7f3',title:`${lbl} was your peak month`,sub:`${fmt$(topMA)} spent`});
+  }
+
+  // 3. Top category dominance
+  if(state.colMap.category&&total>0){
+    const topCat=Object.entries(catMap).sort((a,b)=>b[1]-a[1])[0];
+    if(topCat){
+      const pct=(topCat[1]/total*100).toFixed(0);
+      insights.push({icon:'🎯',bg:'#e0e7ff',title:`${topCat[0]} leads all spending`,sub:`${pct}% of total · ${fmt$(topCat[1])}`});
+    }
+  }
+
+  // 4. 3-month spending trend (up or down)
+  if(sortedMonths.length>=3){
+    const last3=sortedMonths.slice(-3).map(m=>monthTotals[m]||0);
+    const trend=(last3[2]-last3[0])/last3[0]*100;
+    if(Math.abs(trend)>5){
+      insights.push(trend>0
+        ?{icon:'📈',bg:'#fef9c3',title:'Spending is trending up',sub:`+${trend.toFixed(0)}% over the last 3 months`}
+        :{icon:'📉',bg:'#dcfce7',title:'Spending is trending down',sub:`${trend.toFixed(0)}% over the last 3 months`});
+    }
+  }
+
+  // 5. Fastest growing category (most recent two months)
+  if(sortedMonths.length>=2&&state.colMap.category){
+    const lastM=sortedMonths[sortedMonths.length-1],prevM=sortedMonths[sortedMonths.length-2];
+    let maxG=-Infinity,maxGCat=null;
+    Object.entries(catMonthMap).forEach(([cat,mm])=>{
+      const cur=mm[lastM]||0,prev=mm[prevM]||0;
+      if(prev>0&&cur>0){const g=(cur-prev)/prev*100;if(g>maxG){maxG=g;maxGCat=cat;}}
+    });
+    if(maxGCat&&maxG>15)insights.push({icon:'🚀',bg:'#e0f2fe',title:`${maxGCat} spiked last month`,sub:`Up ${maxG.toFixed(0)}% vs the month before`});
+  }
+
+  // 6. Most expensive day of week
+  if(sortedMonths.length>0){
+    const maxDow=dowTotals.indexOf(Math.max(...dowTotals));
+    const dowNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    insights.push({icon:'📅',bg:'#f0fdf4',title:`${dowNames[maxDow]}s are priciest`,sub:`${fmt$(dowTotals[maxDow])} total across all ${dowNames[maxDow]}s`});
+  }
+
+  // 7. Quietest month (for context)
+  if(sortedMonths.length>1){
+    const[minMK,minMA]=Object.entries(monthTotals).sort((a,b)=>a[1]-b[1])[0];
+    const[y,m]=minMK.split('-');
+    const lbl=new Date(+y,+m-1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+    insights.push({icon:'🌿',bg:'#f0fdf4',title:`${lbl} was your lightest month`,sub:`Only ${fmt$(minMA)} spent`});
+  }
+
+  return insights.slice(0,6);
+}
+
+function renderInsights(rows) {
+  const panel=document.getElementById('insights-panel');
+  if(!rows.length){panel.classList.add('hidden');return;}
+  const insights=generateInsights(rows);
+  if(!insights.length){panel.classList.add('hidden');return;}
+  panel.classList.remove('hidden');
+  document.getElementById('insights-grid').innerHTML=insights.map(ins=>`
+    <div class="insight-chip">
+      <div class="insight-icon" style="background:${ins.bg}">${ins.icon}</div>
+      <div class="insight-text">
+        <div class="insight-title">${ins.title}</div>
+        <div class="insight-sub">${ins.sub}</div>
+      </div>
+    </div>`).join('');
+}
 
 // ═══════════════════════════════════════════
 //  RESET
