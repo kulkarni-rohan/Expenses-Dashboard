@@ -182,6 +182,33 @@
     .gc-no-data { font-size:12px; color:var(--muted); text-align:center; padding:14px 0; }
     .growth-hover-hint { font-size:10.5px; color:var(--muted); text-align:center; margin-top:6px; font-style:italic; }
 
+    /* ── SETTLEMENT ── */
+    .settlement-card { background:var(--surface); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); border:1px solid var(--border); margin-bottom:28px; }
+    .settlement-summary-chip { display:inline-flex; align-items:center; gap:6px; padding:5px 14px; border-radius:20px; font-size:12.5px; font-weight:700; }
+    .settle-balanced { background:var(--success-light); color:var(--success); }
+    .settle-a-owes { background:var(--primary-light); color:var(--primary); }
+    .settle-b-owes { background:var(--warning-light); color:var(--warning); }
+    .settlement-table { width:100%; }
+    .settlement-row { display:grid; grid-template-columns:70px 140px 1fr 140px 170px; align-items:center; gap:12px; padding:9px 2px; border-bottom:1px solid #f8fafc; }
+    .settlement-row:last-child { border-bottom:none; }
+    .settlement-row.hdr { border-bottom:1.5px solid var(--border); padding-bottom:8px; margin-bottom:2px; }
+    .settle-month { font-size:12.5px; font-weight:600; }
+    .settle-col-lbl { font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+    .settle-bar-track { height:8px; background:var(--surface2); border-radius:4px; overflow:hidden; }
+    .settle-bar-fill { height:100%; border-radius:4px; transition:width .45s ease; }
+    .settle-amt { font-size:12px; font-weight:700; text-align:right; white-space:nowrap; }
+    .settle-chip { font-size:11.5px; font-weight:700; white-space:nowrap; text-align:right; }
+    .s-zero  { color:var(--success); }
+    .s-a     { color:var(--primary); }
+    .s-b     { color:#d97706; }
+    .settle-legend { display:flex; align-items:center; gap:20px; margin-bottom:16px; flex-wrap:wrap; }
+    .settle-legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); font-weight:500; }
+    .settle-legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .settlement-no-data { text-align:center; padding:40px 20px; color:var(--muted); }
+    .settlement-no-data-icon { font-size:36px; margin-bottom:10px; opacity:.45; }
+    .settlement-no-data-title { font-size:14px; font-weight:600; margin-bottom:6px; color:var(--text); }
+    .settlement-no-data-sub { font-size:13px; line-height:1.55; max-width:360px; margin:0 auto; }
+
     /* ── BUDGET TRACKER ── */
     .budget-section-wrap { margin-bottom:28px; }
     .budget-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
@@ -436,6 +463,18 @@
       </div>
 
     </div><!-- /charts-grid -->
+
+    <!-- ═══ MONTHLY SETTLEMENT ═══ -->
+    <div id="settlement-section" class="hidden">
+      <div class="section-header">
+        <div>
+          <div class="section-title">⚖️ Monthly Settlement</div>
+          <div class="section-sub">Who owes whom after accounting for who paid what</div>
+        </div>
+        <div id="settlement-overall"></div>
+      </div>
+      <div class="settlement-card" id="settlement-body"></div>
+    </div>
 
     <!-- ═══ BUDGET TRACKER ═══ -->
     <div class="budget-section-wrap hidden" id="budget-section">
@@ -714,7 +753,7 @@ function getFiltered() {
   return state.rows.filter(row=>{
     if(category&&getVal(row,'category')!==category)return false;
     if(trip&&getVal(row,'trip')!==trip)return false;
-    if(person&&getPersonName(row)!==person)return false;
+    if(person){const pn=getPersonName(row);const rawBen=(getVal(row,'beneficiary')||'').trim().toLowerCase();if(pn!==person&&rawBen!=='both')return false;}
     if(search&&!Object.values(row).join(' ').toLowerCase().includes(search))return false;
     if(fromD||toD){
       const d=parseDate(getVal(row,'date'));
@@ -738,6 +777,7 @@ function renderAll() {
   renderTrendChart(filtered);           // must come before anything that uses state.monthData
   renderTripChart(filtered);
   renderCategoryGrowthCard(filtered);   // uses state.monthData
+  renderSettlementWidget(filtered);
   renderBudgetSection(filtered);        // uses state.monthData/selectedMonthIdx
   renderHeatmap(filtered);
   renderTable(filtered);
@@ -1049,6 +1089,142 @@ function renderTable(rows) {
 function renderPagination(total){const pages=Math.ceil(total/state.pageSize),pg=document.getElementById('pagination');if(pages<=1){pg.innerHTML='';return;}const nums=[];for(let i=0;i<pages;i++){if(i===0||i===pages-1||Math.abs(i-state.page)<=1)nums.push(i);else if(nums[nums.length-1]!=='…')nums.push('…');}pg.innerHTML=`<span>${total} results · Page ${state.page+1} of ${pages}</span><div class="page-controls"><button class="page-btn" onclick="setPage(${state.page-1})" ${state.page===0?'disabled':''}>‹</button>${nums.map(p=>p==='…'?`<button class="page-btn" disabled>…</button>`:`<button class="page-btn ${p===state.page?'active':''}" onclick="setPage(${p})">${p+1}</button>`).join('')}<button class="page-btn" onclick="setPage(${state.page+1})" ${state.page>=pages-1?'disabled':''}>›</button></div>`;}
 function setPage(p){const t=Math.ceil(getFiltered().length/state.pageSize);state.page=Math.max(0,Math.min(p,t-1));renderTable(getFiltered());}
 function sortTable(col){state.sort.dir=state.sort.col===col?(state.sort.dir==='asc'?'desc':'asc'):'asc';state.sort.col=col;state.page=0;renderTable(getFiltered());}
+
+// ═══════════════════════════════════════════
+//  MONTHLY SETTLEMENT
+// ═══════════════════════════════════════════
+function renderSettlementWidget(rows) {
+  const section=document.getElementById('settlement-section');
+  const body=document.getElementById('settlement-body');
+  section.classList.remove('hidden');
+
+  // Graceful placeholder when paid_by isn't mapped yet
+  if(!state.colMap.paid_by||!state.colMap.beneficiary){
+    document.getElementById('settlement-overall').innerHTML='';
+    body.innerHTML=`
+      <div class="settlement-no-data">
+        <div class="settlement-no-data-icon">⏳</div>
+        <div class="settlement-no-data-title">Payment data not yet connected</div>
+        <div class="settlement-no-data-sub">Map the <strong>Paid By</strong> and <strong>Whose Expense</strong> columns in your CSV to see month-by-month balances between people.</div>
+      </div>`;
+    return;
+  }
+
+  // Collect unique people — exclude "Both" (it's a shared flag, not a person)
+  const isBoth = s => (s||'').trim().toLowerCase()==='both';
+  const peopleSet=new Set();
+  rows.forEach(r=>{
+    const payer=extractPersonName(getVal(r,'paid_by'));
+    const ben=getPersonName(r);
+    if(payer&&!isBoth(payer))peopleSet.add(payer);
+    if(ben&&!isBoth(ben))peopleSet.add(ben);
+  });
+  const people=[...peopleSet].filter(Boolean).sort(); // alphabetical → stable
+
+  if(people.length<2){
+    body.innerHTML=`<div class="settlement-no-data"><div class="settlement-no-data-icon">👤</div><div class="settlement-no-data-title">Need at least 2 people</div><div class="settlement-no-data-sub">No cross-payments found — everyone appears to have paid only their own expenses.</div></div>`;
+    document.getElementById('settlement-overall').innerHTML='';
+    return;
+  }
+
+  // Use the first two people alphabetically (typically Mansi, Rohan)
+  const [personA,personB]=people;
+  const colA=colorFor(personA), colB=colorFor(personB);
+
+  // Build month → net map
+  // net > 0  → B owes A (personA paid more for personB's expenses)
+  // net < 0  → A owes B
+  const monthNet={};  // mk → net amount
+  const monthRaw={};  // mk → {aForB, bForA}  (raw amounts each direction)
+  rows.forEach(r=>{
+    const payer=extractPersonName(getVal(r,'paid_by'));
+    const ben=getPersonName(r);
+    const amt=parseAmount(getVal(r,'amount'));
+    if(!payer||!ben||amt<=0)return;
+    // Direct cross-payments: personA paid full amount for personB (or vice versa)
+    const isPairAB=(payer===personA&&ben===personB);
+    const isPairBA=(payer===personB&&ben===personA);
+    // Shared "Both" expenses: payer covered the other person's half (50%)
+    const isBothAB=(payer===personA&&isBoth(ben)); // personA paid → personB owes half
+    const isBothBA=(payer===personB&&isBoth(ben)); // personB paid → personA owes half
+    if(!isPairAB&&!isPairBA&&!isBothAB&&!isBothBA)return;
+    const d=parseDate(getVal(r,'date'));
+    const mk=d?`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`:'no-date';
+    if(!monthNet[mk]){monthNet[mk]=0;monthRaw[mk]={aForB:0,bForA:0};}
+    if(isPairAB){monthNet[mk]+=amt;monthRaw[mk].aForB+=amt;}
+    if(isPairBA){monthNet[mk]-=amt;monthRaw[mk].bForA+=amt;}
+    if(isBothAB){monthNet[mk]+=amt/2;monthRaw[mk].aForB+=amt/2;} // personB owes half
+    if(isBothBA){monthNet[mk]-=amt/2;monthRaw[mk].bForA+=amt/2;} // personA owes half
+  });
+
+  const sortedMonths=Object.keys(monthNet).filter(k=>k!=='no-date').sort();
+  if(!sortedMonths.length){
+    body.innerHTML=`<div class="settlement-no-data"><div class="settlement-no-data-icon">✅</div><div class="settlement-no-data-title">No cross-payments found</div><div class="settlement-no-data-sub">Everyone paid only their own expenses in the current view.</div></div>`;
+    document.getElementById('settlement-overall').innerHTML='';
+    return;
+  }
+
+  // Overall net
+  const totalNet=sortedMonths.reduce((s,m)=>s+monthNet[m],0);
+  const overallEl=document.getElementById('settlement-overall');
+  if(Math.abs(totalNet)<0.5){
+    overallEl.innerHTML=`<span class="settlement-summary-chip settle-balanced">✓ Overall balanced</span>`;
+  }else if(totalNet>0){
+    overallEl.innerHTML=`<span class="settlement-summary-chip settle-a-owes">${personB} owes ${personA} ${fmt$(totalNet)} overall</span>`;
+  }else{
+    overallEl.innerHTML=`<span class="settlement-summary-chip settle-b-owes">${personA} owes ${personB} ${fmt$(Math.abs(totalNet))} overall</span>`;
+  }
+
+  // Bar scale
+  const maxRaw=Math.max(1,...sortedMonths.map(m=>Math.max(monthRaw[m].aForB,monthRaw[m].bForA)));
+
+  // Render
+  body.innerHTML=`
+    <div class="settle-legend">
+      <div class="settle-legend-item"><div class="settle-legend-dot" style="background:${colA}"></div>${personA} paid (${personB}'s share)</div>
+      <div class="settle-legend-item"><div class="settle-legend-dot" style="background:${colB}"></div>${personB} paid (${personA}'s share)</div>
+      <div class="settle-legend-item" style="font-size:11px;color:var(--muted);margin-left:4px">· "Both" expenses split 50/50</div>
+    </div>
+    <div class="settlement-table">
+      <div class="settlement-row hdr">
+        <div class="settle-col-lbl">Month</div>
+        <div class="settle-col-lbl">${personA} → ${personB}</div>
+        <div class="settle-col-lbl">Amounts paid</div>
+        <div class="settle-col-lbl">${personB} → ${personA}</div>
+        <div class="settle-col-lbl" style="text-align:right">Balance</div>
+      </div>
+      ${sortedMonths.map(mk=>{
+        const{aForB,bForA}=monthRaw[mk];
+        const net=monthNet[mk];
+        const barA=((aForB/maxRaw)*100).toFixed(1);
+        const barB=((bForA/maxRaw)*100).toFixed(1);
+        let chipHtml;
+        if(Math.abs(net)<0.5){
+          chipHtml=`<span class="settle-chip s-zero">✓ Settled</span>`;
+        }else if(net>0){
+          chipHtml=`<span class="settle-chip s-a">${personB} owes ${fmt$(net)}</span>`;
+        }else{
+          chipHtml=`<span class="settle-chip s-b">${personA} owes ${fmt$(Math.abs(net))}</span>`;
+        }
+        const[y,m]=mk.split('-');
+        const lbl=new Date(+y,+m-1).toLocaleDateString('en-US',{month:'short',year:'2-digit'});
+        return `<div class="settlement-row">
+          <div class="settle-month">${lbl}</div>
+          <div class="settle-amt" style="color:${colA}">${aForB>0?fmt$(aForB):'—'}</div>
+          <div>
+            <div class="settle-bar-track" style="margin-bottom:3px">
+              <div class="settle-bar-fill" style="width:${barA}%;background:${colA}99"></div>
+            </div>
+            <div class="settle-bar-track">
+              <div class="settle-bar-fill" style="width:${barB}%;background:${colB}99"></div>
+            </div>
+          </div>
+          <div class="settle-amt" style="color:${colB}">${bForA>0?fmt$(bForA):'—'}</div>
+          ${chipHtml}
+        </div>`;
+      }).join('')}
+    </div>`;
+}
 
 // ═══════════════════════════════════════════
 //  SMART INSIGHTS
