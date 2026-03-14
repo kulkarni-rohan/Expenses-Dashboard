@@ -476,11 +476,29 @@
 // ═══════════════════════════════════════════
 //  CONSTANTS
 // ═══════════════════════════════════════════
+// Palette arranged so consecutive entries are perceptually maximally different:
+// blue → green → amber → violet → teal → orange → indigo → lime → sky → pink …
 const COLORS = [
-  '#6366f1','#0ea5e9','#10b981','#f59e0b','#8b5cf6',
-  '#0d9488','#65a30d','#ec4899','#2563eb','#14b8a6',
-  '#a78bfa','#fbbf24','#06b6d4','#d946ef','#34d399',
-  '#fb923c','#4ade80','#60a5fa','#c084fc','#f472b6'
+  '#3b82f6', // blue
+  '#10b981', // emerald
+  '#f59e0b', // amber
+  '#8b5cf6', // violet
+  '#14b8a6', // teal
+  '#f97316', // orange
+  '#6366f1', // indigo
+  '#22c55e', // bright green
+  '#0ea5e9', // sky
+  '#ec4899', // hot pink
+  '#0d9488', // dark teal
+  '#eab308', // yellow
+  '#a855f7', // purple
+  '#06b6d4', // cyan
+  '#d946ef', // fuchsia
+  '#84cc16', // lime
+  '#7c3aed', // deep violet
+  '#0891b2', // ocean blue
+  '#fb923c', // peach
+  '#4ade80', // light green
 ];
 const FIELDS = {
   name:        {label:'Expense Name', required:true},
@@ -502,7 +520,7 @@ const state = {
   filters:{search:'',category:'',trip:'',person:''},
   sort:{col:'',dir:'asc'},page:0,pageSize:25,charts:{},
   monthData:[],selectedMonthIdx:-1,catMonthData:null,
-  budgets:{},
+  budgets:{},colorMap:{},
 };
 
 // ═══════════════════════════════════════════
@@ -521,7 +539,11 @@ function parseDate(str) {
 }
 const fmt$ = n => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
 const fmtDate = d => d?d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
-const colorFor = str => { let h=0;for(const c of String(str||''))h=h*31+c.charCodeAt(0);return COLORS[Math.abs(h)%COLORS.length]; };
+// colorFor: use the pre-built semantic map when available, fall back to hash
+const colorFor = str => {
+  if(state.colorMap&&state.colorMap[str]!==undefined)return state.colorMap[str];
+  let h=0;for(const c of String(str||''))h=h*31+c.charCodeAt(0);return COLORS[Math.abs(h)%COLORS.length];
+};
 const pillStyle = str => { const c=colorFor(str);return `background:${c}18;color:${c};border:1px solid ${c}30;`; };
 const debounce = (fn,ms) => { let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);}; };
 const showEl = id => document.getElementById(id).classList.remove('hidden');
@@ -580,9 +602,34 @@ function applyMapping(){
 // ═══════════════════════════════════════════
 //  DASHBOARD INIT
 // ═══════════════════════════════════════════
+// Build a deterministic category→color map so the top-spend categories always
+// get the most visually distinct palette slots (consecutive COLORS entries are
+// maximally different hue-wise), and the same category is always the same color
+// across all charts, pills, and budget cards.
+function buildColorMap() {
+  // Categories ranked by total spend → best perceptual slots first
+  const catSpend={};
+  state.rows.forEach(r=>{const cat=getVal(r,'category');if(cat)catSpend[cat]=(catSpend[cat]||0)+parseAmount(getVal(r,'amount'));});
+  const sortedCats=Object.entries(catSpend).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
+
+  // Trips ranked by total spend (keyed as 't_<trip>' matching pillStyle usage)
+  const tripSpend={};
+  state.rows.forEach(r=>{const t=getVal(r,'trip');if(t)tripSpend[t]=(tripSpend[t]||0)+parseAmount(getVal(r,'amount'));});
+  const sortedTrips=Object.entries(tripSpend).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
+
+  // People (sorted alpha — typically only 2-3)
+  const persons=[...new Set(state.rows.map(r=>getPersonName(r)).filter(Boolean))].sort();
+
+  state.colorMap={};
+  sortedCats.forEach((cat,i)=>{state.colorMap[cat]=COLORS[i%COLORS.length];});
+  sortedTrips.forEach((t,i)=>{state.colorMap['t_'+t]=COLORS[i%COLORS.length];});
+  persons.forEach((p,i)=>{state.colorMap[p]=COLORS[i%COLORS.length];});
+}
+
 function initDashboard() {
   document.getElementById('upload-screen').style.display='none';
   document.getElementById('dashboard').classList.remove('hidden');
+  buildColorMap();
   populateFilters();populateHeatmapYear();setupFilterListeners();
   renderAll();
 }
