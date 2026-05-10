@@ -853,7 +853,7 @@ function getFiltered() {
   return state.rows.filter(row=>{
     if(categories.size&&!categories.has(getVal(row,'category')))return false;
     if(trips.size&&!trips.has(getVal(row,'trip')))return false;
-    if(persons.size){const pn=getPersonName(row);const rawBen=(getVal(row,'beneficiary')||'').trim().toLowerCase();if(!persons.has(pn)&&rawBen!=='both')return false;}
+    if(persons.size&&!persons.has(getPersonName(row)))return false;
     if(search&&!Object.values(row).join(' ').toLowerCase().includes(search))return false;
     if(fromD||toD){
       const d=parseDate(getVal(row,'date'));
