@@ -97,6 +97,26 @@
     .search-icon { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:14px; pointer-events:none; }
     .search-wrap input { padding-left:36px; }
     .filter-bar select { width:auto; flex:1; min-width:140px; }
+    /* ── MULTI-SELECT ── */
+    .multi-select { position:relative; flex:1; min-width:140px; }
+    .ms-btn { width:100%; display:flex; align-items:center; gap:6px; padding:8px 12px; background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; font-size:13.5px; color:var(--text); font-family:inherit; transition:border-color .15s,background .15s; white-space:nowrap; }
+    .ms-btn:hover { border-color:var(--primary); }
+    .ms-btn.has-selection { border-color:var(--primary); background:var(--primary-pale); color:var(--primary); font-weight:600; }
+    .ms-btn-label { flex:1; text-align:left; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+    .ms-btn-count { font-size:11px; font-weight:700; background:var(--primary); color:#fff; border-radius:20px; padding:1px 7px; flex-shrink:0; }
+    .ms-btn-arrow { font-size:9px; flex-shrink:0; transition:transform .2s; color:var(--muted); }
+    .ms-btn.open .ms-btn-arrow { transform:rotate(180deg); }
+    .ms-dropdown { position:absolute; top:calc(100% + 5px); left:0; min-width:100%; width:max-content; max-width:280px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); box-shadow:var(--shadow-lg); z-index:500; padding:4px 0 6px; max-height:260px; overflow-y:auto; display:none; }
+    .ms-dropdown.open { display:block; animation:fadeIn .12s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+    .ms-actions { display:flex; gap:0; padding:5px 10px 7px; border-bottom:1px solid var(--border); margin-bottom:4px; }
+    .ms-action-btn { font-size:11.5px; font-weight:600; color:var(--primary); background:none; border:none; cursor:pointer; padding:2px 8px 2px 0; font-family:inherit; opacity:.8; }
+    .ms-action-btn:hover { opacity:1; text-decoration:underline; }
+    .ms-option { display:flex; align-items:center; gap:9px; padding:6px 12px; cursor:pointer; transition:background .1s; }
+    .ms-option:hover { background:var(--surface2); }
+    .ms-option input[type=checkbox] { width:15px; height:15px; accent-color:var(--primary); flex-shrink:0; cursor:pointer; margin:0; }
+    .ms-option-label { font-size:13px; cursor:pointer; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.4; }
+    .ms-pill { display:inline-flex; align-items:center; padding:1px 6px; border-radius:20px; font-size:11px; font-weight:600; margin-right:2px; }
     .date-range-wrap { display:flex; align-items:center; gap:6px; flex-shrink:0; }
     .date-range-wrap input[type="date"] { width:136px; font-size:12.5px; padding:7px 10px; }
     .date-range-sep { font-size:13px; color:var(--muted); font-weight:500; }
@@ -369,9 +389,9 @@
         <span class="search-icon">🔍</span>
         <input type="search" id="search-input" placeholder="Search expenses…">
       </div>
-      <select id="filter-category"><option value="">All Categories</option></select>
-      <select id="filter-trip"><option value="">All Trips</option></select>
-      <select id="filter-person"><option value="">All People</option></select>
+      <div class="multi-select" id="ms-category"></div>
+      <div class="multi-select" id="ms-trip"></div>
+      <div class="multi-select" id="ms-person"></div>
       <div class="date-range-wrap">
         <input type="date" id="filter-date-from" title="From date">
         <span class="date-range-sep">→</span>
@@ -586,7 +606,7 @@ const TABLE_LABELS = {date:'Date',name:'Expense',amount:'Amount',category:'Categ
 // ═══════════════════════════════════════════
 const state = {
   rows:[],headers:[],colMap:{},pendingData:null,
-  filters:{search:'',category:'',trip:'',person:'',dateFrom:'',dateTo:''},
+  filters:{search:'',categories:new Set(),trips:new Set(),persons:new Set(),dateFrom:'',dateTo:''},
   sort:{col:'',dir:'asc'},page:0,pageSize:25,charts:{},
   monthData:[],selectedMonthIdx:-1,catMonthData:null,
   budgets:{},colorMap:{},
@@ -707,9 +727,86 @@ function populateFilters() {
   const cats=[...new Set(state.rows.map(r=>getVal(r,'category')).filter(Boolean))].sort();
   const trips=[...new Set(state.rows.map(r=>getVal(r,'trip')).filter(Boolean))].sort();
   const ppl=[...new Set(state.rows.map(r=>getPersonName(r)).filter(Boolean))].sort();
-  fillSel('filter-category',cats,'All Categories');fillSel('filter-trip',trips,'All Trips');fillSel('filter-person',ppl,'All People');
+  buildMultiSelect('ms-category',cats,'🏷 Category','categories');
+  buildMultiSelect('ms-trip',trips,'✈ Trip','trips');
+  buildMultiSelect('ms-person',ppl,'👤 Person','persons');
 }
-function fillSel(id,opts,ph){document.getElementById(id).innerHTML=`<option value="">${ph}</option>`+opts.map(o=>`<option value="${o}">${o}</option>`).join('');}
+
+function buildMultiSelect(containerId, items, placeholder, stateKey) {
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  const safeId=v=>containerId+'-'+v.replace(/[^a-z0-9]/gi,'_');
+  el.innerHTML=`
+    <button class="ms-btn" id="${containerId}-btn" type="button">
+      <span class="ms-btn-label" id="${containerId}-lbl">${placeholder}</span>
+      <span class="ms-btn-count hidden" id="${containerId}-cnt"></span>
+      <span class="ms-btn-arrow">▼</span>
+    </button>
+    <div class="ms-dropdown" id="${containerId}-dd">
+      <div class="ms-actions">
+        <button class="ms-action-btn" type="button" onclick="msAll('${containerId}','${stateKey}',true)">Select all</button>
+        <button class="ms-action-btn" type="button" onclick="msAll('${containerId}','${stateKey}',false)">Clear</button>
+      </div>
+      ${items.map(v=>`
+        <label class="ms-option">
+          <input type="checkbox" id="${safeId(v)}" value="${v}" onchange="msToggle('${containerId}','${stateKey}',this)">
+          <span class="ms-option-label">${v}</span>
+        </label>`).join('')}
+    </div>`;
+  document.getElementById(containerId+'-btn').addEventListener('click',e=>{e.stopPropagation();toggleMsDd(containerId);});
+}
+
+function toggleMsDd(id) {
+  const dd=document.getElementById(id+'-dd');
+  const btn=document.getElementById(id+'-btn');
+  const isOpen=dd.classList.contains('open');
+  // Close all others
+  document.querySelectorAll('.ms-dropdown.open').forEach(d=>{ d.classList.remove('open'); d.previousElementSibling?.classList.remove('open'); });
+  if(!isOpen){dd.classList.add('open');btn.classList.add('open');}
+}
+
+function msToggle(containerId, stateKey, checkbox) {
+  const val=checkbox.value;
+  if(checkbox.checked) state.filters[stateKey].add(val);
+  else state.filters[stateKey].delete(val);
+  updateMsBtn(containerId,stateKey);
+  state.page=0;renderAll();
+}
+
+function msAll(containerId, stateKey, selectAll) {
+  const dd=document.getElementById(containerId+'-dd');
+  dd.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+    cb.checked=selectAll;
+    if(selectAll) state.filters[stateKey].add(cb.value);
+  });
+  if(!selectAll) state.filters[stateKey].clear();
+  updateMsBtn(containerId,stateKey);
+  state.page=0;renderAll();
+}
+
+function updateMsBtn(containerId, stateKey) {
+  const sel=state.filters[stateKey];
+  const lbl=document.getElementById(containerId+'-lbl');
+  const cnt=document.getElementById(containerId+'-cnt');
+  const btn=document.getElementById(containerId+'-btn');
+  const placeholders={'ms-category':'🏷 Category','ms-trip':'✈ Trip','ms-person':'👤 Person'};
+  if(!sel||sel.size===0){
+    lbl.textContent=placeholders[containerId]||'All';
+    cnt.classList.add('hidden');btn.classList.remove('has-selection');
+  } else {
+    const arr=[...sel];
+    lbl.textContent=arr.slice(0,2).join(', ')+(arr.length>2?'…':'');
+    cnt.textContent=arr.length;cnt.classList.remove('hidden');
+    btn.classList.add('has-selection');
+  }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click',()=>{
+  document.querySelectorAll('.ms-dropdown.open').forEach(d=>{
+    d.classList.remove('open');d.previousElementSibling?.classList.remove('open');
+  });
+});
 
 function populateHeatmapYear() {
   const years=[...new Set(state.rows.map(r=>{const d=parseDate(getVal(r,'date'));return d?d.getFullYear():null;}).filter(Boolean))].sort().reverse();
@@ -720,14 +817,10 @@ function populateHeatmapYear() {
 
 function setupFilterListeners() {
   document.getElementById('search-input').addEventListener('input',debounce(updateFilters,180));
-  ['filter-category','filter-trip','filter-person'].forEach(id=>document.getElementById(id).addEventListener('change',updateFilters));
   ['filter-date-from','filter-date-to'].forEach(id=>document.getElementById(id).addEventListener('change',updateFilters));
 }
 function updateFilters() {
   state.filters.search=document.getElementById('search-input').value.toLowerCase();
-  state.filters.category=document.getElementById('filter-category').value;
-  state.filters.trip=document.getElementById('filter-trip').value;
-  state.filters.person=document.getElementById('filter-person').value;
   state.filters.dateFrom=document.getElementById('filter-date-from').value;
   state.filters.dateTo=document.getElementById('filter-date-to').value;
   // Update active date badge
@@ -741,19 +834,26 @@ function updateFilters() {
 }
 function clearFilters(){
   document.getElementById('search-input').value='';
-  ['filter-category','filter-trip','filter-person'].forEach(id=>document.getElementById(id).value='');
   ['filter-date-from','filter-date-to'].forEach(id=>document.getElementById(id).value='');
+  // Clear all multi-selects
+  ['ms-category','ms-trip','ms-person'].forEach(id=>{
+    const stateKeys={'ms-category':'categories','ms-trip':'trips','ms-person':'persons'};
+    state.filters[stateKeys[id]].clear();
+    const dd=document.getElementById(id+'-dd');
+    if(dd)dd.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
+    updateMsBtn(id,stateKeys[id]);
+  });
   updateFilters();
 }
 
 function getFiltered() {
-  const{search,category,trip,person,dateFrom,dateTo}=state.filters;
+  const{search,categories,trips,persons,dateFrom,dateTo}=state.filters;
   const fromD=dateFrom?new Date(dateFrom):null;
   const toD=dateTo?new Date(dateTo+'T23:59:59'):null;
   return state.rows.filter(row=>{
-    if(category&&getVal(row,'category')!==category)return false;
-    if(trip&&getVal(row,'trip')!==trip)return false;
-    if(person){const pn=getPersonName(row);const rawBen=(getVal(row,'beneficiary')||'').trim().toLowerCase();if(pn!==person&&rawBen!=='both')return false;}
+    if(categories.size&&!categories.has(getVal(row,'category')))return false;
+    if(trips.size&&!trips.has(getVal(row,'trip')))return false;
+    if(persons.size){const pn=getPersonName(row);const rawBen=(getVal(row,'beneficiary')||'').trim().toLowerCase();if(!persons.has(pn)&&rawBen!=='both')return false;}
     if(search&&!Object.values(row).join(' ').toLowerCase().includes(search))return false;
     if(fromD||toD){
       const d=parseDate(getVal(row,'date'));
