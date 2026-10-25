@@ -1,0 +1,5 @@
+{
+  "_comment": "Settings for the Overview tab. An expense counts as an INVESTMENT when its category contains any of these words (case-insensitive, matched at the start of a word). Edit freely and reload the page.",
+  "investment_category_keywords": ["invest", "stock", "mutual", "etf", "401k", "roth", "brokerage", "retirement", "sip"],
+  "subtract_investments_from_savings": true
+}

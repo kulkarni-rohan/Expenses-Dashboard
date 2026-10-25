@@ -1,0 +1,10 @@
+{
+  "_comment": "Default monthly budget per category, in dollars. Edit freely; category names must match your CSV exactly (case-sensitive). Remove a line or set 0 for no budget. Reload the page after editing.",
+  "monthly_budgets": {
+    "Fees": 100,
+    "Food": 300,
+    "Home": 150,
+    "Entertainment": 100,
+    "Clothes": 200
+  }
+}

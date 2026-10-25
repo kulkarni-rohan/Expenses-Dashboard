@@ -47,8 +47,11 @@ capitalisation. It looks for columns matching these fields:
 | Date          | `Date`, `Expense Date`, `When`                            |
 | Trip          | `Trip`, `Trip Name`, `Associated Trip`, `Event`           |
 
-After uploading, a **mapping confirmation** screen lets you verify or adjust
-which column maps to which field.
+After uploading, columns are mapped automatically (e.g. `Card` → Paid By,
+`Who's expense was it` → Whose Expense). A manual mapping screen only appears if
+the Expense Name or Amount column can't be found.
+
+Default monthly budgets live in `budgets.json` — edit it and reload the page.
 
 ---
 
@@ -78,3 +81,13 @@ expense-dashboard/
 └── templates/
     └── index.html      ← Full frontend (HTML + CSS + JS)
 ```
+
+## Income & Overview tab
+
+Upload an income CSV (`Date, Type of Income, Person, Amount, Source`) alongside
+the expenses CSV — either one is optional. The landing **Overview** tab shows
+income, expenses, investment and savings per month or per year, with a
+green/red status. **Savings = income − expenses − investments**; green when ≥ 0.
+Investments are expenses whose category matches a keyword in `config.json`
+(e.g. "Investments", "Stocks", "401k") — edit that file to match your categories.
+The **Expenses** tab is the original dashboard.
