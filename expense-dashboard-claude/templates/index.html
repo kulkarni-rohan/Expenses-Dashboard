@@ -337,6 +337,40 @@
     .page-btn.active { background:var(--primary); color:white; border-color:var(--primary); }
     .page-btn:disabled { opacity:.35; cursor:not-allowed; }
 
+    /* ── SPLASH ── */
+    #splash { position:fixed; inset:0; z-index:5000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px; text-align:center; overflow:hidden; background:linear-gradient(150deg,#0f172a 0%,#1e1b4b 50%,#064e3b 120%); color:#fff; transition:opacity .55s ease,transform .55s ease,visibility .55s; }
+    #splash.leaving { opacity:0; transform:scale(1.04); visibility:hidden; pointer-events:none; }
+    .sp-blob { position:absolute; border-radius:50%; filter:blur(70px); opacity:.45; animation:spFloat 14s ease-in-out infinite alternate; }
+    .sp-blob.a { width:440px; height:440px; background:#6366f1; top:-120px; left:-100px; }
+    .sp-blob.b { width:380px; height:380px; background:#0ea5e9; bottom:-140px; right:-80px; animation-delay:-5s; }
+    .sp-blob.c { width:300px; height:300px; background:#10b981; bottom:15%; left:8%; opacity:.28; animation-delay:-9s; }
+    @keyframes spFloat { to { transform:translate(60px,-40px) scale(1.15); } }
+    .sp-logo { position:relative; width:132px; height:132px; margin-bottom:30px; animation:spPop .9s cubic-bezier(.2,1.3,.4,1) both, spBob 5s ease-in-out .9s infinite; filter:drop-shadow(0 18px 40px rgba(99,102,241,.55)); }
+    @keyframes spPop { from{opacity:0;transform:scale(.5) rotate(-12deg)} to{opacity:1;transform:none} }
+    @keyframes spBob { 50% { transform:translateY(-8px); } }
+    .sp-bar { transform-box:fill-box; transform-origin:bottom; animation:spGrow .8s cubic-bezier(.2,.9,.3,1.2) both; }
+    .sp-bar.b1 { animation-delay:.55s } .sp-bar.b2 { animation-delay:.7s } .sp-bar.b3 { animation-delay:.85s }
+    @keyframes spGrow { from { transform:scaleY(0); } }
+    .sp-line { stroke-dasharray:130; stroke-dashoffset:130; animation:spDraw 1s ease 1.05s forwards; }
+    @keyframes spDraw { to { stroke-dashoffset:0; } }
+    .sp-spark { transform-box:fill-box; transform-origin:center; animation:spTwinkle 2.4s ease-in-out 1.8s infinite; opacity:0; }
+    @keyframes spTwinkle { 0%,100%{opacity:0;transform:scale(.3)} 50%{opacity:1;transform:scale(1)} }
+    .sp-title { position:relative; font-size:46px; font-weight:800; letter-spacing:-1.5px; line-height:1.05; animation:spUp .7s ease .35s both; }
+    .sp-title span { background:linear-gradient(135deg,#a5b4fc,#7dd3fc 55%,#6ee7b7); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .sp-tag { position:relative; margin-top:14px; font-size:18px; color:#cbd5e1; max-width:480px; line-height:1.5; animation:spUp .7s ease .5s both; }
+    .sp-chips { position:relative; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:22px; animation:spUp .7s ease .65s both; }
+    .sp-chips span { font-size:12.5px; font-weight:600; padding:5px 14px; border-radius:20px; background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.14); color:#e2e8f0; }
+    .sp-go { position:relative; margin-top:40px; display:inline-flex; align-items:center; gap:10px; min-width:210px; justify-content:center; padding:15px 38px; border:none; border-radius:16px; font-family:inherit; font-size:16px; font-weight:700; color:#fff; cursor:pointer; background:linear-gradient(135deg,#6366f1,#0ea5e9); box-shadow:0 12px 32px -8px rgba(99,102,241,.7); transition:transform .2s,box-shadow .2s,opacity .3s; animation:spUp .7s ease .8s both; }
+    .sp-go:not(:disabled):hover { transform:translateY(-3px) scale(1.03); box-shadow:0 18px 40px -8px rgba(14,165,233,.7); }
+    .sp-go:disabled { cursor:default; background:rgba(255,255,255,.12); box-shadow:none; color:#cbd5e1; }
+    .sp-go .arrow { transition:transform .2s; } .sp-go:not(:disabled):hover .arrow { transform:translateX(4px); }
+    .sp-spin { width:16px; height:16px; border-radius:50%; border:2.5px solid rgba(255,255,255,.3); border-top-color:#fff; animation:spRot .8s linear infinite; }
+    @keyframes spRot { to { transform:rotate(360deg); } }
+    .sp-status { position:relative; margin-top:16px; font-size:13px; color:#94a3b8; min-height:20px; animation:spUp .7s ease .95s both; }
+    @keyframes spUp { from { opacity:0; transform:translateY(16px); } }
+    @media (max-width:520px){ .sp-title{font-size:34px} .sp-tag{font-size:16px} }
+    @media (prefers-reduced-motion:reduce){ #splash *,#splash{animation:none !important} .sp-line{stroke-dashoffset:0} .sp-spark{opacity:1} }
+
     /* ── UPLOAD (two files) ── */
     .upload-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; width:100%; max-width:1020px; }
     .upload-card { padding:28px; }
@@ -426,6 +460,30 @@
   </style>
 </head>
 <body>
+
+<!-- ═══ SPLASH ═══ -->
+<div id="splash">
+  <div class="sp-blob a"></div><div class="sp-blob b"></div><div class="sp-blob c"></div>
+  <svg class="sp-logo" viewBox="0 0 132 132" aria-hidden="true">
+    <defs>
+      <linearGradient id="spTile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#818cf8"/><stop offset=".55" stop-color="#38bdf8"/><stop offset="1" stop-color="#34d399"/></linearGradient>
+      <linearGradient id="spShine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    </defs>
+    <rect x="4" y="4" width="124" height="124" rx="34" fill="url(#spTile)"/>
+    <rect x="4" y="4" width="124" height="124" rx="34" fill="url(#spShine)"/>
+    <rect class="sp-bar b1" x="30" y="72" width="16" height="30" rx="5" fill="#fff" fill-opacity=".92"/>
+    <rect class="sp-bar b2" x="58" y="56" width="16" height="46" rx="5" fill="#fff" fill-opacity=".92"/>
+    <rect class="sp-bar b3" x="86" y="38" width="16" height="64" rx="5" fill="#fff"/>
+    <path class="sp-line" d="M26 62 C46 56 56 40 72 38 S92 24 108 20" fill="none" stroke="#fde68a" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="108" cy="20" r="7" fill="#fde68a"/>
+    <path class="sp-spark" d="M24 28 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6z" fill="#fff"/>
+  </svg>
+  <h1 class="sp-title">Expense <span>Dashboard</span></h1>
+  <p class="sp-tag">Know where every dollar goes — and where it’s headed.</p>
+  <div class="sp-chips"><span>💵 Income</span><span>🛍️ Expenses</span><span>📈 Investments</span><span>🏦 Savings</span></div>
+  <button class="sp-go" id="sp-go" disabled onclick="enterApp()"><span class="sp-spin"></span><span id="sp-go-label">Getting things ready…</span></button>
+  <div class="sp-status" id="sp-status"></div>
+</div>
 
 <!-- Tooltip for heatmap -->
 <div id="heatmap-tip"></div>
@@ -1404,15 +1462,30 @@ function showBudgetModal() {
 }
 // Auto-load any CSVs sitting in the git-ignored artifacts/ folder (expenses vs income decided server-side)
 async function loadArtifacts(){
+  const t0=performance.now();
+  let found=[];
   try{
     const d=await (await fetch('/artifacts_data')).json();
-    if(d.expense){d.expense.fileName+=' (artifacts/)';applyDetectedMapping(d.expense);}
-    if(d.income){d.income.fileName+=' (artifacts/)';applyIncome(d.income);}
+    if(d.expense){d.expense.fileName+=' (artifacts/)';applyDetectedMapping(d.expense);found.push('expenses');}
+    if(d.income){d.income.fileName+=' (artifacts/)';applyIncome(d.income);found.push('income');}
     if(d.warnings&&d.warnings.length)showErr(d.warnings.join(' · '));
-    if((state.rows.length||state.income)&&!state.pendingData)launchDashboard();
   }catch(e){}
+  await new Promise(r=>setTimeout(r,Math.max(0,1500-(performance.now()-t0)))); // let the intro animation play
+  splashReady(found);
 }
-window.addEventListener('load',()=>setTimeout(loadArtifacts,300));
+function splashReady(found){
+  const btn=document.getElementById('sp-go');btn.disabled=false;
+  const auto=(state.rows.length||state.income)&&!state.pendingData;
+  btn.innerHTML=`<span>${auto?'Open my dashboard':'Get started'}</span><span class="arrow">→</span>`;
+  document.getElementById('sp-status').textContent=found.length?`✓ Found your ${found.join(' & ')} data in artifacts/`:'No saved data found — you can upload your CSVs next';
+  btn.focus();
+}
+function enterApp(){
+  const sp=document.getElementById('splash');
+  if((state.rows.length||state.income)&&!state.pendingData)launchDashboard();
+  sp.classList.add('leaving');setTimeout(()=>sp.remove(),700);
+}
+window.addEventListener('load',loadArtifacts);
 fetch('/config').then(r=>r.json()).then(c=>Object.assign(state.config,c)).catch(()=>{});
 fetch('/budgets').then(r=>r.json()).then(d=>{
   if(d.error)console.warn(d.error);
