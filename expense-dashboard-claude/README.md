@@ -91,3 +91,10 @@ green/red status. **Savings = income − expenses − investments**; green when 
 Investments are expenses whose category matches a keyword in `config.json`
 (e.g. "Investments", "Stocks", "401k") — edit that file to match your categories.
 The **Expenses** tab is the original dashboard.
+
+## Auto-loading from `artifacts/`
+
+Drop your expenses and income CSVs (any filenames) into the `artifacts/` folder
+and they load automatically on startup — the app works out which is which from
+the column headers. The whole folder is git-ignored, so your data is never
+committed. Manual upload still works via “Upload New CSVs”.

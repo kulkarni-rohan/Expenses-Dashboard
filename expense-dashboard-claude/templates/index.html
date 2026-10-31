@@ -1402,6 +1402,17 @@ function showBudgetModal() {
   }).join('');
   showEl('budget-modal-overlay');
 }
+// Auto-load any CSVs sitting in the git-ignored artifacts/ folder (expenses vs income decided server-side)
+async function loadArtifacts(){
+  try{
+    const d=await (await fetch('/artifacts_data')).json();
+    if(d.expense){d.expense.fileName+=' (artifacts/)';applyDetectedMapping(d.expense);}
+    if(d.income){d.income.fileName+=' (artifacts/)';applyIncome(d.income);}
+    if(d.warnings&&d.warnings.length)showErr(d.warnings.join(' · '));
+    if((state.rows.length||state.income)&&!state.pendingData)launchDashboard();
+  }catch(e){}
+}
+window.addEventListener('load',()=>setTimeout(loadArtifacts,300));
 fetch('/config').then(r=>r.json()).then(c=>Object.assign(state.config,c)).catch(()=>{});
 fetch('/budgets').then(r=>r.json()).then(d=>{
   if(d.error)console.warn(d.error);

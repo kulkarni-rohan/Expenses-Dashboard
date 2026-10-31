@@ -120,27 +120,17 @@ def index():
     return render_template('index.html')
 
 
-def read_csv_upload():
-    """Read the uploaded CSV. Returns (headers, rows, None) or (None, None, error_response)."""
-    if 'file' not in request.files:
-        return None, None, (jsonify({'error': 'No file uploaded'}), 400)
-
-    file = request.files['file']
-    if not file.filename:
-        return None, None, (jsonify({'error': 'No file selected'}), 400)
-
-    # Try multiple encodings
+def parse_csv_bytes(raw):
+    """Decode and parse CSV bytes. Returns (headers, rows); raises ValueError with a user-facing message."""
     content = None
     for enc in ['utf-8-sig', 'utf-8', 'latin-1', 'cp1252']:
         try:
-            file.seek(0)
-            content = file.read().decode(enc)
+            content = raw.decode(enc)
             break
-        except (UnicodeDecodeError, AttributeError):
+        except UnicodeDecodeError:
             continue
-
     if content is None:
-        return None, None, (jsonify({'error': 'Cannot read file. Please save as UTF-8 CSV.'}), 400)
+        raise ValueError('Cannot read file. Please save as UTF-8 CSV.')
 
     try:
         reader = csv.DictReader(io.StringIO(content))
@@ -150,11 +140,26 @@ def read_csv_upload():
             clean = {k: (v or '').strip() for k, v in row.items() if k and k.strip()}
             rows.append(clean)
     except Exception as e:
-        return None, None, (jsonify({'error': f'CSV parse error: {e}'}), 400)
+        raise ValueError(f'CSV parse error: {e}')
 
     if not rows:
-        return None, None, (jsonify({'error': 'The CSV appears to be empty. Please check the file.'}), 400)
+        raise ValueError('The CSV appears to be empty. Please check the file.')
+    return headers, rows
 
+
+def read_csv_upload():
+    """Read the uploaded CSV. Returns (headers, rows, None) or (None, None, error_response)."""
+    if 'file' not in request.files:
+        return None, None, (jsonify({'error': 'No file uploaded'}), 400)
+
+    file = request.files['file']
+    if not file.filename:
+        return None, None, (jsonify({'error': 'No file selected'}), 400)
+
+    try:
+        headers, rows = parse_csv_bytes(file.read())
+    except ValueError as e:
+        return None, None, (jsonify({'error': str(e)}), 400)
     return headers, rows, None
 
 
@@ -168,6 +173,63 @@ def upload_response(patterns):
         'column_map': detect_columns(headers, patterns),
         'count': len(rows)
     })
+
+
+ARTIFACTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'artifacts')
+os.makedirs(ARTIFACTS_DIR, exist_ok=True)  # git-ignored (see .gitignore): holds your private CSVs
+
+EXPENSE_ONLY = ('name', 'paid_by', 'beneficiary', 'category', 'trip')
+INCOME_ONLY = ('source', 'type', 'person')
+
+
+def kind_scores(headers):
+    """How much a header row looks like an expenses file vs an income file."""
+    exp = len([f for f in detect_columns(headers, FIELD_PATTERNS) if f in EXPENSE_ONLY])
+    inc = len([f for f in detect_columns(headers, INCOME_PATTERNS) if f in INCOME_ONLY])
+    joined = ' '.join(normalize(h) for h in headers)
+    if 'income' in joined or 'salary' in joined:
+        inc += 3
+    if 'expense' in joined or 'paid' in joined or 'card' in joined:
+        exp += 3
+    return exp, inc
+
+
+@app.route('/artifacts_data')
+def artifacts_data():
+    """Auto-load the CSVs dropped into artifacts/, working out at runtime which is expenses and which is income."""
+    found = []
+    for name in sorted(os.listdir(ARTIFACTS_DIR)):
+        if not name.lower().endswith('.csv') or name.startswith('.'):
+            continue
+        try:
+            with open(os.path.join(ARTIFACTS_DIR, name), 'rb') as f:
+                headers, rows = parse_csv_bytes(f.read())
+        except (OSError, ValueError) as e:
+            found.append({'fileName': name, 'error': str(e)})
+            continue
+        exp, inc = kind_scores(headers)
+        found.append({'fileName': name, 'headers': headers, 'rows': rows, 'count': len(rows), 'exp': exp, 'inc': inc})
+
+    good = [f for f in found if 'error' not in f]
+    out = {'expense': None, 'income': None, 'warnings': [f"{f['fileName']}: {f['error']}" for f in found if 'error' in f]}
+
+    def payload(f, patterns):
+        return {k: f[k] for k in ('fileName', 'headers', 'rows', 'count')} | {'column_map': detect_columns(f['headers'], patterns)}
+
+    if len(good) == 1:
+        f = good[0]
+        kind = 'expense' if f['exp'] >= f['inc'] else 'income'
+        out[kind] = payload(f, FIELD_PATTERNS if kind == 'expense' else INCOME_PATTERNS)
+    elif len(good) >= 2:
+        # best-scoring expenses file, then best-scoring income file among the rest
+        e = max(good, key=lambda f: f['exp'] - f['inc'])
+        rest = [f for f in good if f is not e]
+        i = max(rest, key=lambda f: f['inc'] - f['exp'])
+        out['expense'], out['income'] = payload(e, FIELD_PATTERNS), payload(i, INCOME_PATTERNS)
+        ignored = [f['fileName'] for f in good if f is not e and f is not i]
+        if ignored:
+            out['warnings'].append('Ignored extra CSVs: ' + ', '.join(ignored))
+    return jsonify(out)
 
 
 @app.route('/upload', methods=['POST'])
