@@ -1,9 +1,0 @@
-# macOS
-.DS_Store
-
-# Local data — never commit
-artifacts/
-
-# Python
-__pycache__/
-*.pyc
