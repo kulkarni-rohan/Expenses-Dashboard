@@ -1,0 +1,417 @@
+{
+  "_readme": [
+    "Card rewards policy. Public card terms only - no personal data - so this file is safe to commit.",
+    "A card label in your expense CSV looks like '<Owner> - <Product>' (e.g. 'Rohan - Sapphire Reserve'). The part after ' - ' is matched (case-insensitive, exact) against each card's 'names'.",
+    "A card that matches nothing here is treated as UNKNOWN: its spend is shown but no points are calculated. Never guess - add an entry below once you know the exact product and its terms.",
+    "RULES: inside a version, rules are tried top to bottom and the first match wins; 'base' applies if none match. A rule matches on 'name_contains' (merchant label, case-insensitive substring), 'groups' (see category_groups), or both (both must match). 'until' = last day a time-limited rule applies.",
+    "RATES: 'rate' = points per dollar (cash back 3% = 3). Use 'rate_min' and 'rate_max' only when the data can't tell which rate applied (e.g. Apple Pay vs physical card); the dashboard then shows a floor and a ceiling.",
+    "VERSIONS: terms change. Each version has valid_from / valid_to (null = open). A purchase dated outside every version is left UNRATED rather than guessed.",
+    "'cpp' = cents of value per point. 1.0 is the guaranteed cash/statement-credit redemption; raise it only if you reliably redeem for more.",
+    "'assumes' on a rule is shown in the dashboard wherever the rule relied on a labeling convention instead of hard data.",
+    "CAPS: a rule may set 'cap_per_year' (dollars per calendar year at the bonus rate) and 'after_cap' (rate once exceeded).",
+    "HOUSING: a version may set 'housing' (used by Bilt) - rent points depend on that month's everyday spend on the same card divided by the housing payment. Tiers, the minimum points and the optional ceiling rate come from the issuer.",
+    "'caveat' on a card is shown next to it in the dashboard - use it when a source could not be read directly."
+  ],
+  "defaults": {
+    "cpp": 1.0
+  },
+  "category_groups": {
+    "Food": "dining",
+    "Grocery": "grocery",
+    "Flight": "flight",
+    "Hotel": "hotel",
+    "Rent": "rent",
+    "Investment": "investment"
+  },
+  "non_movable": {
+    "groups": [
+      "rent",
+      "investment"
+    ],
+    "name_contains": [
+      "tax payment",
+      "annual membership fee"
+    ]
+  },
+  "cards": [
+    {
+      "id": "chase_sapphire_reserve",
+      "display": "Chase Sapphire Reserve",
+      "names": [
+        "sapphire reserve",
+        "chase sapphire reserve",
+        "csr"
+      ],
+      "status": "verified",
+      "currency": "Chase Ultimate Rewards points",
+      "cpp": 1.0,
+      "annual_fee": 795,
+      "fee_names": [
+        "annual membership fee"
+      ],
+      "credit_names": [
+        "credit"
+      ],
+      "credits_available": "Up to $300 travel, $500 The Edit hotels, $300 OpenTable dining, plus DoorDash, Lyft, StubHub, Peloton, Apple TV/Music credits (amounts per issuer page). Only credits logged as negative 'credit' lines in your expense log are counted.",
+      "sources": [
+        {
+          "url": "https://creditcards.chase.com/rewards-credit-cards/sapphire/reserve",
+          "verified_on": "2026-10-30"
+        }
+      ],
+      "versions": [
+        {
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "verified_on": "2026-10-30",
+          "rules": [
+            {
+              "label": "Chase Travel portal (8x)",
+              "name_contains": [
+                "chase travel"
+              ],
+              "rate": 8
+            },
+            {
+              "label": "Lyft rides (5x promo)",
+              "name_contains": [
+                "lyft"
+              ],
+              "rate": 5,
+              "until": "2027-09-30"
+            },
+            {
+              "label": "Flights booked direct (4x)",
+              "groups": [
+                "flight"
+              ],
+              "rate": 4,
+              "assumes": "Flight entries are treated as booked direct with the airline unless the label contains 'Chase Travel'."
+            },
+            {
+              "label": "Hotels booked direct (4x)",
+              "groups": [
+                "hotel"
+              ],
+              "rate": 4,
+              "assumes": "Hotel entries are treated as booked direct with the hotel unless the label contains 'Chase Travel'."
+            },
+            {
+              "label": "Dining worldwide (3x)",
+              "groups": [
+                "dining"
+              ],
+              "rate": 3,
+              "assumes": "Everything in your 'Food' category is treated as dining (restaurants, takeout, delivery)."
+            }
+          ],
+          "base": {
+            "label": "All other purchases (1x)",
+            "rate": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "chase_freedom_unlimited",
+      "display": "Chase Freedom Unlimited",
+      "names": [
+        "freedom unlimited",
+        "chase freedom unlimited",
+        "cfu"
+      ],
+      "status": "verified",
+      "currency": "Cash back (1 point = 1 cent)",
+      "cpp": 1.0,
+      "annual_fee": 0,
+      "fee_names": [],
+      "credit_names": [
+        "credit"
+      ],
+      "sources": [
+        {
+          "url": "https://creditcards.chase.com/cash-back-credit-cards/freedom/unlimited",
+          "verified_on": "2026-10-30"
+        }
+      ],
+      "versions": [
+        {
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "verified_on": "2026-10-30",
+          "rules": [
+            {
+              "label": "Travel via Chase Travel (5%)",
+              "name_contains": [
+                "chase travel"
+              ],
+              "rate": 5
+            },
+            {
+              "label": "Lyft in the Lyft app (2% total)",
+              "name_contains": [
+                "lyft"
+              ],
+              "rate": 2,
+              "until": "2027-09-30"
+            },
+            {
+              "label": "Drugstores (3%)",
+              "name_contains": [
+                "walgreens",
+                "cvs",
+                "rite aid"
+              ],
+              "rate": 3
+            },
+            {
+              "label": "Dining incl. takeout & delivery (3%)",
+              "groups": [
+                "dining"
+              ],
+              "rate": 3,
+              "assumes": "Everything in your 'Food' category is treated as dining (restaurants, takeout, delivery)."
+            }
+          ],
+          "base": {
+            "label": "All other purchases (1.5%)",
+            "rate": 1.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "apple_card",
+      "display": "Apple Card",
+      "names": [
+        "apple",
+        "apple card"
+      ],
+      "status": "verified",
+      "currency": "Daily Cash (1 point = 1 cent)",
+      "cpp": 1.0,
+      "annual_fee": 0,
+      "fee_names": [],
+      "credit_names": [],
+      "sources": [
+        {
+          "url": "https://www.apple.com/apple-card/",
+          "verified_on": "2026-10-30"
+        }
+      ],
+      "versions": [
+        {
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "verified_on": "2026-10-30",
+          "rules": [
+            {
+              "label": "Purchases at Apple (3%)",
+              "name_contains": [
+                "apple",
+                "icloud",
+                "applecare",
+                "app store",
+                "itunes"
+              ],
+              "rate": 3,
+              "assumes": "Merchant labels containing 'Apple', 'iCloud', 'AppleCare' etc. are treated as bought at Apple."
+            }
+          ],
+          "base": {
+            "label": "Elsewhere: 2% with Apple Pay, 1% physical card / card number",
+            "rate_min": 1,
+            "rate_max": 2,
+            "note": "Your data does not record Apple Pay vs physical card, so this is shown as a floor (1%) and a ceiling (2%). Select partners such as Nike, Uber and Walgreens pay 3% with Apple Pay and are not separately detected."
+          }
+        }
+      ]
+    },
+    {
+      "id": "bilt_blue",
+      "display": "Bilt Blue",
+      "names": [
+        "bilt",
+        "bilt blue"
+      ],
+      "status": "verified",
+      "currency": "Bilt Points",
+      "cpp": 1.0,
+      "annual_fee": 0,
+      "fee_names": [],
+      "credit_names": [],
+      "caveat": "Applies from 2026-02-07 (the day after the original Bilt Mastercard stopped working, per press reports). Rent before that date is left unrated because the data doesn't show which card version paid it. Edit valid_from if you know your switch date.",
+      "sources": [
+        {
+          "url": "https://www.bilt.com/card/blue",
+          "verified_on": "2026-10-30"
+        }
+      ],
+      "versions": [
+        {
+          "valid_from": "2026-02-07",
+          "valid_to": null,
+          "verified_on": "2026-10-30",
+          "housing": {
+            "groups": [
+              "rent"
+            ],
+            "tiers": [
+              {
+                "min_ratio": 0.25,
+                "mult": 0.5
+              },
+              {
+                "min_ratio": 0.5,
+                "mult": 0.75
+              },
+              {
+                "min_ratio": 0.75,
+                "mult": 1.0
+              },
+              {
+                "min_ratio": 1.0,
+                "mult": 1.25
+              }
+            ],
+            "minimum_points": 250,
+            "ceiling_rate": 1.0,
+            "note": "Floor: the housing multiplier earned from your everyday spend on this card that month (minimum 250 points). Ceiling: up to 1x if Bilt Cash was redeemed to unlock housing points - Bilt Cash use isn't in your data."
+          },
+          "rules": [
+            {
+              "label": "Bilt partner restaurants (up to 4x)",
+              "groups": [
+                "dining"
+              ],
+              "rate_min": 1,
+              "rate_max": 4,
+              "assumes": "Your 'Food' category is treated as dining; the restaurant bonus varies by restaurant and is only shown in the Bilt app, so this is a floor (1x) and ceiling (4x).",
+              "note": "Restaurant bonus varies by restaurant (shown in the Bilt app)."
+            },
+            {
+              "label": "Lyft (3x after linking accounts)",
+              "name_contains": [
+                "lyft"
+              ],
+              "rate_min": 1,
+              "rate_max": 3,
+              "note": "Lyft 3x requires linked accounts - not visible in your data."
+            }
+          ],
+          "base": {
+            "label": "Other everyday purchases (1x)",
+            "rate": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "amex_blue_cash_preferred",
+      "display": "Amex Blue Cash Preferred",
+      "names": [
+        "amex",
+        "american express",
+        "amex blue cash preferred",
+        "blue cash preferred"
+      ],
+      "status": "verified",
+      "currency": "Cash back as Reward Dollars (1 point = 1 cent)",
+      "cpp": 1.0,
+      "annual_fee": 95,
+      "fee_auto": true,
+      "fee_note": "$95 billed yearly; charged automatically when not in your expense log.",
+      "fee_names": [
+        "annual fee",
+        "annual membership fee"
+      ],
+      "credit_names": [],
+      "caveat": "Rates come from American Express's own pages as returned by search; the card page itself could not be opened by the tool, so re-confirm on americanexpress.com.",
+      "sources": [
+        {
+          "url": "https://www.americanexpress.com/us/credit-cards/card/blue-cash-preferred/",
+          "verified_on": "2026-10-30"
+        }
+      ],
+      "versions": [
+        {
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "verified_on": "2026-10-30",
+          "rules": [
+            {
+              "label": "U.S. supermarkets (6% up to $6,000/yr, then 1%)",
+              "groups": [
+                "grocery"
+              ],
+              "rate_min": 1,
+              "rate_max": 6,
+              "cap_per_year": 6000,
+              "after_cap": 1,
+              "assumes": "Your 'Grocery' category is treated as U.S. supermarkets. Amex excludes superstores, warehouse clubs and convenience stores, and which merchants count depends on their category code, which isn't in your data - so floor 1%, ceiling 6%.",
+              "note": "6% only if the merchant is coded as a U.S. supermarket."
+            },
+            {
+              "label": "Select U.S. streaming (6%)",
+              "name_contains": [
+                "disney",
+                "hulu",
+                "espn"
+              ],
+              "rate": 6
+            },
+            {
+              "label": "U.S. gas stations (3%)",
+              "name_contains": [
+                "valero",
+                "chevron",
+                "shell",
+                "exxon",
+                "arco",
+                "exxonmobil",
+            "mobil gas"
+              ],
+              "rate": 3,
+              "assumes": "Merchant labels naming a gas brand are treated as U.S. gas stations."
+            },
+            {
+              "label": "Transit: tolls, parking, trains, buses (3%)",
+              "name_contains": [
+                "fastrak",
+                "toll",
+                "parking",
+                "bart",
+                "caltrain",
+                "muni"
+              ],
+              "rate": 3,
+              "assumes": "Merchant labels containing toll/parking/transit-agency names are treated as transit."
+            }
+          ],
+          "base": {
+            "label": "All other purchases (1%)",
+            "rate": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "discover",
+      "display": "Discover",
+      "names": [
+        "discover"
+      ],
+      "status": "unknown",
+      "unknown_reason": "'Discover' doesn't say which Discover card; some earn rotating 5% categories, others flat rates."
+    },
+    {
+      "id": "chase_unspecified",
+      "display": "Chase (product not specified)",
+      "names": [
+        "chase"
+      ],
+      "status": "unknown",
+      "unknown_reason": "'Chase' on its own doesn't identify a card (it could be a checking account, debit card or any Chase credit card)."
+    }
+  ]
+}

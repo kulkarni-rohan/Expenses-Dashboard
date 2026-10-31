@@ -240,21 +240,30 @@
     .settle-a-owes { background:var(--primary-light); color:var(--primary); }
     .settle-b-owes { background:var(--warning-light); color:var(--warning); }
     .settlement-table { width:100%; }
-    .settlement-row { display:grid; grid-template-columns:70px 140px 1fr 140px 170px; align-items:center; gap:12px; padding:9px 2px; border-bottom:1px solid #f8fafc; }
+    .settlement-row { display:grid; grid-template-columns:62px 118px 1fr 118px 210px; align-items:center; gap:12px; padding:9px 2px; border-bottom:1px solid #f8fafc; }
     .settlement-row:last-child { border-bottom:none; }
     .settlement-row.hdr { border-bottom:1.5px solid var(--border); padding-bottom:8px; margin-bottom:2px; }
     .settle-month { font-size:12.5px; font-weight:600; }
     .settle-col-lbl { font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
-    .settle-bar-track { height:8px; background:var(--surface2); border-radius:4px; overflow:hidden; }
-    .settle-bar-fill { height:100%; border-radius:4px; transition:width .45s ease; }
+    .settle-bar-track { display:flex; height:8px; background:var(--surface2); border-radius:4px; overflow:hidden; }
+    .settle-bar-fill { height:100%; flex-shrink:0; border-radius:4px 0 0 4px; transition:width .45s ease; }
+    .settle-pay-seg { height:100%; flex-shrink:0; background:repeating-linear-gradient(45deg,#7c3aed 0 4px,#a78bfa 4px 8px); border-radius:0 4px 4px 0; transition:width .45s ease; }
+    .settle-bar-fill:only-child { border-radius:4px; }
+    .settle-pay-note { font-size:10.5px; font-weight:600; color:#7c3aed; margin-top:3px; }
     .settle-amt { font-size:12px; font-weight:700; text-align:right; white-space:nowrap; }
     .settle-chip { font-size:11.5px; font-weight:700; white-space:nowrap; text-align:right; }
+    .settle-sub { font-size:10.5px; color:var(--muted); font-weight:500; margin-top:2px; line-height:1.35; white-space:normal; }
     .s-zero  { color:var(--success); }
     .s-a     { color:var(--primary); }
     .s-b     { color:#d97706; }
     .settle-legend { display:flex; align-items:center; gap:20px; margin-bottom:16px; flex-wrap:wrap; }
     .settle-legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); font-weight:500; }
     .settle-legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .settle-paid-strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin-bottom:18px; }
+    .settle-paid-box { background:var(--surface2); border-radius:14px; padding:12px 16px; }
+    .settle-paid-box.final { background:var(--primary-pale); box-shadow:inset 0 0 0 1.5px var(--primary-light); }
+    .settle-paid-lbl { font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
+    .settle-paid-val { font-size:17px; font-weight:800; margin-top:3px; }
     .settlement-no-data { text-align:center; padding:40px 20px; color:var(--muted); }
     .settlement-no-data-icon { font-size:36px; margin-bottom:10px; opacity:.45; }
     .settlement-no-data-title { font-size:14px; font-weight:600; margin-bottom:6px; color:var(--text); }
@@ -454,6 +463,43 @@
     tr.total .pos,tr.total .neg { color:inherit; }
     .ov-note { font-size:12.5px; color:var(--muted); margin-top:10px; line-height:1.5; }
     @media (prefers-reduced-motion:reduce){ .ov-anim{animation:none} .ov-kpi,.chip,.ov-bar-fill{transition:none} }
+
+    /* ── CARD REWARDS ── */
+    .cr-cov { display:flex; height:12px; border-radius:7px; overflow:hidden; background:var(--surface2); margin:6px 0 10px; }
+    .cr-cov span { display:block; height:100%; }
+    .cr-legend { display:flex; gap:18px; flex-wrap:wrap; font-size:12.5px; color:var(--muted); }
+    .cr-legend i { display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+    .cr-card-name { font-weight:700; }
+    .cr-sub { font-size:11.5px; color:var(--muted); font-weight:500; margin-top:2px; line-height:1.4; max-width:340px; white-space:normal; text-align:left; }
+    .cr-table td { vertical-align:top; }
+    .cr-table td:first-child { text-align:left; }
+    .cr-unk td { color:var(--muted); }
+    .cr-badge { display:inline-block; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; margin-left:8px; vertical-align:1px; }
+    .cr-badge.ok { background:#d1fae5; color:#047857; } .cr-badge.unk { background:#e2e8f0; color:#475569; }
+    .cr-tip { display:flex; gap:12px; align-items:flex-start; padding:12px 14px; border-radius:14px; background:var(--primary-pale); margin-bottom:8px; font-size:13.5px; line-height:1.5; }
+    .cr-tip b { color:var(--primary-dark); }
+    .cr-kv { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin-bottom:16px; }
+    .cr-kv div { background:var(--surface2); border-radius:14px; padding:12px 16px; }
+    .cr-kv small { display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); }
+    .cr-kv b { font-size:19px; font-weight:800; }
+    .cr-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:18px; }
+    .cr-stat { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:16px 20px; }
+    .cr-stat small { display:block; font-size:12.5px; font-weight:600; color:var(--muted); }
+    .cr-stat b { display:block; font-size:26px; font-weight:800; letter-spacing:-.6px; margin-top:4px; }
+    .cr-stat.hl { background:linear-gradient(135deg,#eef2ff,#e0f2fe); border-color:#c7d2fe; }
+    .cr-stat.hl b { color:var(--primary-dark); }
+    .cr-pill { display:inline-block; font-size:12px; font-weight:700; padding:3px 11px; border-radius:20px; white-space:nowrap; }
+    .cr-pill.good { background:#d1fae5; color:#047857; } .cr-pill.bad { background:#ffe4e6; color:#be123c; } .cr-pill.mute { background:var(--surface2); color:var(--muted); }
+    .cr-i { color:var(--muted); cursor:help; font-size:12px; }
+    .cr-meter { height:8px; width:110px; background:var(--surface2); border-radius:5px; overflow:hidden; margin-left:auto; }
+    .cr-meter span { display:block; height:100%; border-radius:5px; }
+    .cr-table td:not(:first-child),.cr-table th:not(:first-child) { text-align:right; }
+    .cr-table td .cr-sub { margin-left:auto; text-align:right; }
+    .cr-table td:first-child .cr-sub { margin-left:0; text-align:left; }
+    .cr-how { font-size:13px; line-height:1.55; color:var(--text); }
+    .cr-how h4 { font-size:13.5px; margin:14px 0 4px; }
+    .cr-how ul { margin:4px 0 0 18px; color:var(--muted); }
+    .cr-how a { color:var(--primary); }
 
     .hidden { display:none !important; }
     @media(max-width:640px){.main{padding:16px}.nav{padding:0 16px}}
@@ -765,6 +811,22 @@
       <div class="pagination" id="pagination"></div>
     </div>
 
+
+    <!-- ═══ CARD REWARDS (bottom-most) ═══ -->
+    <div id="cr-section" class="hidden" style="margin-top:28px">
+      <div class="section-header">
+        <div>
+          <div class="section-title">💳 Card Rewards</div>
+          <div class="section-sub">What each card earned, and where a better card was available.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div class="seg" id="cr-gran"><div class="seg-thumb"></div><button data-g="year" class="active">Yearly</button><button data-g="month">Monthly</button></div>
+          <select id="cr-period" style="width:auto;min-width:140px"></select>
+        </div>
+      </div>
+      <div id="cr-body"></div>
+    </div>
+
   </div><!-- /main -->
 </div><!-- /dashboard -->
 
@@ -818,7 +880,7 @@ const state = {
   sort:{col:'',dir:'asc'},page:0,pageSize:25,charts:{},
   monthData:[],selectedMonthIdx:-1,catMonthData:null,
   budgets:{},colorMap:{},
-  income:null,expDirty:false,config:{investment_category_keywords:[],subtract_investments_from_savings:true},
+  income:null,payments:null,expDirty:false,config:{investment_category_keywords:[],subtract_investments_from_savings:true},
 };
 const esc = v => String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -884,6 +946,11 @@ function markLoaded(kind,name,count){
   dz.querySelector('.drop-zone-icon').textContent='✅';
   dz.querySelector('.drop-zone-text').innerHTML=`<span class="drop-zone-file">${esc(name)}</span><br>${count} rows · click to replace`;
   document.getElementById('open-dash-btn').disabled=false;
+}
+function applyPayments(data){
+  const m=data.column_map||{};
+  if(!m.payer||!m.payee||!m.amount)return;
+  state.payments={rows:data.rows,colMap:m};
 }
 function applyIncome(data){
   const m=data.column_map||{};
@@ -1247,6 +1314,7 @@ function renderAll() {
   renderBudgetSection(filtered);        // uses state.monthData/selectedMonthIdx
   renderHeatmap(filtered);
   renderTable(filtered);
+  renderCardRewards();
 }
 
 // ═══════════════════════════════════════════
@@ -1468,6 +1536,7 @@ async function loadArtifacts(){
     const d=await (await fetch('/artifacts_data')).json();
     if(d.expense){d.expense.fileName+=' (artifacts/)';applyDetectedMapping(d.expense);found.push('expenses');}
     if(d.income){d.income.fileName+=' (artifacts/)';applyIncome(d.income);found.push('income');}
+    if(d.payments){applyPayments(d.payments);found.push('payments');}
     if(d.warnings&&d.warnings.length)showErr(d.warnings.join(' · '));
   }catch(e){}
   await new Promise(r=>setTimeout(r,Math.max(0,1500-(performance.now()-t0)))); // let the intro animation play
@@ -1628,6 +1697,30 @@ function renderSettlementWidget(rows) {
   const [personA,personB]=people;
   const colA=colorFor(personA), colB=colorFor(personB);
 
+  // Cash already handed over between the two (from the payments file in artifacts/)
+  const pays=[];let payAdj=0; // A→B payments shrink what A owes B (net moves up); B→A the reverse
+  if(state.payments){
+    const pm=state.payments.colMap,{dateFrom,dateTo}=state.filters;
+    const fromD=dateFrom?parseDate(dateFrom):null,toD=dateTo?new Date(dateTo+'T23:59:59'):null;
+    state.payments.rows.forEach(r=>{
+      const from=extractPersonName(r[pm.payer]||''),to=extractPersonName(r[pm.payee]||''),amt=parseAmount(r[pm.amount]);
+      const d=pm.date?parseDate(r[pm.date]):null;
+      if(!amt||!((from===personA&&to===personB)||(from===personB&&to===personA)))return;
+      if((fromD||toD)&&(!d||(fromD&&d<fromD)||(toD&&d>toD)))return;
+      pays.push({d,from,to,amt});
+      payAdj+=from===personA?amt:-amt;
+    });
+    pays.sort((x,y)=>(y.d||0)-(x.d||0));
+  }
+  // payments per month: a B→A payment settles the bar where A paid for B, and vice versa
+  const payM={};
+  pays.forEach(x=>{
+    if(!x.d)return;
+    const mk=`${x.d.getFullYear()}-${String(x.d.getMonth()+1).padStart(2,'0')}`;
+    const o=payM[mk]||(payM[mk]={aToB:0,bToA:0});
+    if(x.from===personA)o.aToB+=x.amt;else o.bToA+=x.amt;
+  });
+
   // Build month → net map
   // net > 0  → B owes A (personA paid more for personB's expenses)
   // net < 0  → A owes B
@@ -1654,6 +1747,7 @@ function renderSettlementWidget(rows) {
     if(isBothBA){monthNet[mk]-=amt/2;monthRaw[mk].bForA+=amt/2;} // personA owes half
   });
 
+  Object.keys(payM).forEach(mk=>{if(!monthNet[mk]){monthNet[mk]=0;monthRaw[mk]={aForB:0,bForA:0};}}); // months with only a payment still get a row
   const sortedMonths=Object.keys(monthNet).filter(k=>k!=='no-date').sort();
   if(!sortedMonths.length){
     body.innerHTML=`<div class="settlement-no-data"><div class="settlement-no-data-icon">✅</div><div class="settlement-no-data-title">No cross-payments found</div><div class="settlement-no-data-sub">Everyone paid only their own expenses in the current view.</div></div>`;
@@ -1662,47 +1756,64 @@ function renderSettlementWidget(rows) {
   }
 
   // Overall net
-  const totalNet=sortedMonths.reduce((s,m)=>s+monthNet[m],0);
+  const accrued=sortedMonths.reduce((s,m)=>s+monthNet[m],0);
+  const totalNet=accrued+payAdj; // still pending after payments made
   const overallEl=document.getElementById('settlement-overall');
   if(Math.abs(totalNet)<0.5){
-    overallEl.innerHTML=`<span class="settlement-summary-chip settle-balanced">✓ Overall balanced</span>`;
+    overallEl.innerHTML=`<span class="settlement-summary-chip settle-balanced">✓ ${pays.length?'All settled up':'Overall balanced'}</span>`;
   }else if(totalNet>0){
-    overallEl.innerHTML=`<span class="settlement-summary-chip settle-a-owes">${personB} owes ${personA} ${fmt$(totalNet)} overall</span>`;
+    overallEl.innerHTML=`<span class="settlement-summary-chip settle-a-owes">${personB} owes ${personA} ${fmt$(totalNet)} ${pays.length?'pending':'overall'}</span>`;
   }else{
-    overallEl.innerHTML=`<span class="settlement-summary-chip settle-b-owes">${personA} owes ${personB} ${fmt$(Math.abs(totalNet))} overall</span>`;
+    overallEl.innerHTML=`<span class="settlement-summary-chip settle-b-owes">${personA} owes ${personB} ${fmt$(Math.abs(totalNet))} ${pays.length?'pending':'overall'}</span>`;
   }
 
   // Bar scale
-  const maxRaw=Math.max(1,...sortedMonths.map(m=>Math.max(monthRaw[m].aForB,monthRaw[m].bForA)));
+  // Running balance: carry each month's new expenses AND payments forward (>0 = B owes A, <0 = A owes B)
+  const runBal={};let run=0;
+  sortedMonths.forEach(mk=>{const pm=payM[mk]||{aToB:0,bToA:0};run+=monthNet[mk]+pm.aToB-pm.bToA;runBal[mk]=run;});
+  const oweTxt=n=>n>0?`${personB} owes ${personA} ${fmt$(n)}`:`${personA} owes ${personB} ${fmt$(-n)}`;
+  const maxRaw=Math.max(1,...sortedMonths.map(m=>Math.max(monthRaw[m].aForB+(payM[m]?.bToA||0),monthRaw[m].bForA+(payM[m]?.aToB||0))));
 
   // Render
+  const owes=n=>Math.abs(n)<0.5?'Nothing':n>0?`${personB} owes ${personA} ${fmt$(n)}`:`${personA} owes ${personB} ${fmt$(-n)}`;
+  const paidA=pays.filter(x=>x.from===personA).reduce((t,x)=>t+x.amt,0),paidB=pays.filter(x=>x.from===personB).reduce((t,x)=>t+x.amt,0);
+  const payStrip=pays.length?`
+    <div class="settle-paid-strip">
+      <div class="settle-paid-box"><div class="settle-paid-lbl">Owed from expenses</div><div class="settle-paid-val">${owes(accrued)}</div></div>
+      <div class="settle-paid-box"><div class="settle-paid-lbl">Already paid back</div><div class="settle-paid-val">${[paidA?`${personA} → ${personB} ${fmt$(paidA)}`:'',paidB?`${personB} → ${personA} ${fmt$(paidB)}`:''].filter(Boolean).join(' · ')}</div></div>
+      <div class="settle-paid-box final"><div class="settle-paid-lbl">Still pending</div><div class="settle-paid-val">${owes(totalNet)}</div></div>
+    </div>`:'';
   body.innerHTML=`
+    ${payStrip}
     <div class="settle-legend">
-      <div class="settle-legend-item"><div class="settle-legend-dot" style="background:${colA}"></div>${personA} paid (${personB}'s share)</div>
-      <div class="settle-legend-item"><div class="settle-legend-dot" style="background:${colB}"></div>${personB} paid (${personA}'s share)</div>
+      <div class="settle-legend-item"><div class="settle-legend-dot" style="background:${colA}"></div>${personA} paid for ${personB}'s share</div>
+      <div class="settle-legend-item"><div class="settle-legend-dot" style="background:${colB}"></div>${personB} paid for ${personA}'s share</div>
+      ${pays.length?`<div class="settle-legend-item"><div class="settle-legend-dot" style="border-radius:3px;background:repeating-linear-gradient(45deg,#7c3aed 0 3px,#a78bfa 3px 6px)"></div>Money handed over (settles that bar)</div>`:''}
       <div class="settle-legend-item" style="font-size:11px;color:var(--muted);margin-left:4px">· "Both" expenses split 50/50</div>
     </div>
     <div class="settlement-table">
       <div class="settlement-row hdr">
         <div class="settle-col-lbl">Month</div>
-        <div class="settle-col-lbl">${personA} → ${personB}</div>
-        <div class="settle-col-lbl">Amounts paid</div>
-        <div class="settle-col-lbl">${personB} → ${personA}</div>
-        <div class="settle-col-lbl" style="text-align:right">Balance</div>
+        <div class="settle-col-lbl">${personA} covered for ${personB}</div>
+        <div class="settle-col-lbl">Expenses &amp; payments</div>
+        <div class="settle-col-lbl">${personB} covered for ${personA}</div>
+        <div class="settle-col-lbl" style="text-align:right">Running balance</div>
       </div>
       ${sortedMonths.map(mk=>{
         const{aForB,bForA}=monthRaw[mk];
         const net=monthNet[mk];
-        const barA=((aForB/maxRaw)*100).toFixed(1);
-        const barB=((bForA/maxRaw)*100).toFixed(1);
-        let chipHtml;
-        if(Math.abs(net)<0.5){
-          chipHtml=`<span class="settle-chip s-zero">✓ Settled</span>`;
-        }else if(net>0){
-          chipHtml=`<span class="settle-chip s-a">${personB} owes ${fmt$(net)}</span>`;
-        }else{
-          chipHtml=`<span class="settle-chip s-b">${personA} owes ${fmt$(Math.abs(net))}</span>`;
-        }
+        const pm=payM[mk]||{aToB:0,bToA:0};
+        const barA=((aForB/maxRaw)*100).toFixed(1),segA=((pm.bToA/maxRaw)*100).toFixed(1);
+        const barB=((bForA/maxRaw)*100).toFixed(1),segB=((pm.aToB/maxRaw)*100).toFixed(1);
+        const bal=runBal[mk];
+        const chipHtml=Math.abs(bal)<0.5
+          ?`<span class="settle-chip s-zero">✓ All settled up</span>`
+          :`<span class="settle-chip ${bal>0?'s-a':'s-b'}">${oweTxt(bal)}</span>`;
+        const subParts=[];
+        if(aForB||bForA)subParts.push(Math.abs(net)<0.5?'expenses evened out':`new expenses: ${net>0?personB:personA} owes ${fmt$(Math.abs(net))}`);
+        if(pm.aToB)subParts.push(`${personA} paid ${fmt$(pm.aToB)}`);
+        if(pm.bToA)subParts.push(`${personB} paid ${fmt$(pm.bToA)}`);
+        const subHtml=`<div class="settle-sub">${subParts.join(' · ')}</div>`;
         const[y,m]=mk.split('-');
         const lbl=new Date(+y,+m-1).toLocaleDateString('en-US',{month:'short',year:'2-digit'});
         return `<div class="settlement-row">
@@ -1711,13 +1822,15 @@ function renderSettlementWidget(rows) {
           <div>
             <div class="settle-bar-track" style="margin-bottom:3px">
               <div class="settle-bar-fill" style="width:${barA}%;background:${colA}99"></div>
+              ${pm.bToA?`<div class="settle-pay-seg" style="width:${segA}%" title="${personB} paid ${personA} ${fmt$(pm.bToA)}"></div>`:''}
             </div>
             <div class="settle-bar-track">
               <div class="settle-bar-fill" style="width:${barB}%;background:${colB}99"></div>
+              ${pm.aToB?`<div class="settle-pay-seg" style="width:${segB}%" title="${personA} paid ${personB} ${fmt$(pm.aToB)}"></div>`:''}
             </div>
           </div>
           <div class="settle-amt" style="color:${colB}">${bForA>0?fmt$(bForA):'—'}</div>
-          ${chipHtml}
+          <div style="text-align:right">${chipHtml}${subHtml}</div>
         </div>`;
       }).join('')}
     </div>`;
@@ -1917,8 +2030,9 @@ function renderOverview(){
   };
   const neg=cur.savings<0,sc=neg?'#f43f5e':'#10b981';
   const kpi=(i,icon,l,key,c,sub)=>`<div class="ov-kpi ov-anim" style="--c:${c};--i:${i}"><div class="ov-kpi-top"><div class="ov-kpi-icon">${icon}</div><div class="ov-kpi-label">${l}</div></div><div class="ov-kpi-val" data-count="${cur[key]}">${money(0)}</div><div class="ov-kpi-delta">${sub}</div></div>`;
+  const pct=k=>cur.income>0?`${(cur[k]/cur.income*100).toFixed(0)}% of income`:'';
   const rateTxt=cur.rate==null?'':`${(cur.rate*100).toFixed(0)}% of income`;
-  const kpis=kpi(0,'💵','Income','income','#0ea5e9',delta('income',true))+kpi(1,'🛍️','Expenses','expense','#f59e0b',delta('expense',false))+kpi(2,'📈','Investment','invest','#8b5cf6',delta('invest',true))+kpi(3,'🏦','Savings','savings',sc,rateTxt||delta('savings',true));
+  const kpis=kpi(0,'💵','Income','income','#0ea5e9',delta('income',true))+kpi(1,'🛍️','Expenses','expense','#f59e0b',[pct('expense'),delta('expense',false)].filter(Boolean).join('<br>'))+kpi(2,'📈','Investment','invest','#8b5cf6',[pct('invest'),delta('invest',true)].filter(Boolean).join('<br>'))+kpi(3,'🏦','Savings','savings',sc,rateTxt||delta('savings',true));
 
   // totals + table
   const tot=list.reduce((t,p)=>{t.income+=p.income;t.expense+=p.expense;t.invest+=p.invest;t.savings+=p.savings;return t;},{income:0,expense:0,invest:0,savings:0});
@@ -1984,6 +2098,257 @@ function renderOverview(){
   ov.animChart=false;
 }
 
+// ═══════════════════════════════════════════
+//  CARD REWARDS  (policy: card_rewards.json — deterministic, unknowns stay unknown)
+// ═══════════════════════════════════════════
+const cr={policy:null,gran:'year',sel:''};
+fetch('/card_rewards').then(r=>r.json()).then(p=>{cr.policy=p;if(p.error)console.warn(p.error);}).catch(()=>{});
+
+const crDay=(str,end)=>{if(!str)return null;const[y,m,d]=str.split('-').map(Number);return end?new Date(y,m-1,d,23,59,59):new Date(y,m-1,d);};
+const crX=r=>r.min===r.max?`${+r.min.toFixed(2)}x`:`${+r.min.toFixed(2)}–${+r.max.toFixed(2)}x`;
+const crSplit=label=>{const i=label.indexOf(' - ');return i<0?{owner:'',product:label.trim()}:{owner:label.slice(0,i).trim(),product:label.slice(i+3).trim()};};
+function crFindCard(product){
+  const p=product.toLowerCase();
+  return (cr.policy.cards||[]).find(c=>(c.names||[]).some(n=>n.toLowerCase()===p))||null;
+}
+function crVersion(card,d){
+  if(!card||card.status!=='verified')return null;
+  return (card.versions||[]).find(v=>(!v.valid_from||d>=crDay(v.valid_from))&&(!v.valid_to||d<=crDay(v.valid_to,true)))||null;
+}
+// first matching rule wins; returns {min,max,label,assumes,note,cap,after} or null (= unrated)
+function crRate(ver,name,group,d){
+  const mk=(r)=>{
+    const min=r.rate!=null?r.rate:r.rate_min,max=r.rate!=null?r.rate:r.rate_max;
+    return(min==null||max==null)?null:{min,max,label:r.label||'',assumes:r.assumes||'',note:r.note||'',cap:r.cap_per_year||0,after:r.after_cap!=null?r.after_cap:null};
+  };
+  for(const r of ver.rules||[]){
+    if(r.until&&d>crDay(r.until,true))continue;
+    const hasN=r.name_contains&&r.name_contains.length,hasG=r.groups&&r.groups.length;
+    if(!hasN&&!hasG)continue;
+    if(hasN&&!r.name_contains.some(n=>name.includes(n.toLowerCase())))continue;
+    if(hasG&&!r.groups.includes(group))continue;
+    return mk(r);
+  }
+  return ver.base?mk(ver.base):null;
+}
+
+function crPeriods(){
+  const keys=new Set();
+  state.rows.forEach(r=>{const d=parseDate(getVal(r,'date'));if(d)keys.add(cr.gran==='year'?String(d.getFullYear()):`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);});
+  return[...keys].sort();
+}
+const crLabel=k=>cr.gran==='year'?k:monthLabel(k);
+
+function crCompute(period){
+  const pol=cr.policy,defCpp=(pol.defaults&&pol.defaults.cpp)||1,groups=pol.category_groups||{},nm=pol.non_movable||{};
+  const infos={},stats={},buckets={},capUsed={},house={},cats={},moves=[];let noDate=0;
+  const info=label=>{
+    if(infos[label])return infos[label];
+    const{owner,product}=crSplit(label),card=crFindCard(product);
+    return infos[label]={label,owner,product,card,known:!!card&&card.status==='verified',cpp:card&&card.cpp!=null?card.cpp:defCpp};
+  };
+  const stat=label=>stats[label]||(stats[label]=Object.assign({},info(label),{spend:0,n:0,rated:0,unrated:0,ptsMin:0,ptsMax:0,fees:0,credits:0,assume:{},notes:new Set(),housingNotes:new Set()}));
+  const mkKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  const inPeriod=d=>cr.gran==='year'?String(d.getFullYear())===period:mkKey(d)===period;
+
+  const txs=[];
+  state.rows.forEach(r=>{
+    const label=getVal(r,'paid_by');if(!label)return;
+    const d=parseDate(getVal(r,'date'));if(!d){noDate++;return;}
+    const cat=getVal(r,'category');
+    txs.push({label,d,amt:parseAmount(getVal(r,'amount')),name:getVal(r,'name').toLowerCase(),cat,group:groups[cat]||null});
+  });
+  txs.sort((a,b)=>a.d-b.d); // caps accrue chronologically across the whole year, not just the selected period
+  const isFee=(i,t)=>i.known&&(i.card.fee_names||[]).some(n=>t.name.includes(n.toLowerCase()))&&t.amt>0;
+  const isCredit=(i,t)=>i.known&&(i.card.credit_names||[]).some(n=>t.name.includes(n.toLowerCase()))&&t.amt<0;
+  const isHousing=(ver,t)=>ver&&ver.housing&&(ver.housing.groups||[]).includes(t.group)&&t.amt>0;
+
+  // pass 1: monthly housing payment vs everyday spend on the same card (Bilt-style housing rewards)
+  txs.forEach(t=>{
+    const i=info(t.label),ver=i.known?crVersion(i.card,t.d):null;
+    if(!ver||!ver.housing||isFee(i,t)||isCredit(i,t))return;
+    const h=(house[t.label]||(house[t.label]={}))[mkKey(t.d)]||(house[t.label][mkKey(t.d)]={housing:0,everyday:0,ver});
+    if(isHousing(ver,t))h.housing+=t.amt;else h.everyday+=t.amt;
+  });
+
+  const movable=(t)=>!(nm.groups||[]).includes(t.group)&&!(nm.name_contains||[]).some(n=>t.name.includes(n.toLowerCase()));
+  const known=()=>Object.values(infos).filter(i=>i.known);
+
+  txs.forEach(t=>{
+    const i=info(t.label),ver=i.known?crVersion(i.card,t.d):null,counted=inPeriod(t.d);
+    let c=null;
+    if(counted)c=stat(t.label);
+
+    if(isFee(i,t)){if(c)c.fees+=t.amt;return;}
+    if(isCredit(i,t)){if(c)c.credits+=-t.amt;return;}
+    if(c){c.spend+=t.amt;c.n++;}
+
+    // --- points for this purchase ---
+    let rate=null;
+    if(isHousing(ver,t)){
+      if(c)c.rated+=t.amt; // housing points are added per month below
+    }else if(i.known&&ver){
+      rate=crRate(ver,t.name,t.group,t.d);
+      if(rate){
+        let lo=t.amt*rate.min,hi=t.amt*rate.max;
+        if(rate.cap){
+          const key=`${t.label}|${rate.label}|${t.d.getFullYear()}`,used=capUsed[key]||0,after=rate.after!=null?rate.after:rate.min;
+          if(t.amt>0){const inCap=Math.min(t.amt,Math.max(0,rate.cap-used)),over=t.amt-inCap;lo=inCap*rate.min+over*Math.min(rate.min,after);hi=inCap*rate.max+over*after;}
+          capUsed[key]=Math.max(0,used+t.amt);
+        }
+        if(c){
+          c.rated+=t.amt;c.ptsMin+=lo;c.ptsMax+=hi;
+          if(rate.assumes){const a=c.assume[rate.assumes]||(c.assume[rate.assumes]={spend:0,label:rate.label});a.spend+=t.amt;}
+          if(rate.note)c.notes.add(rate.note);
+        }
+      }else if(c)c.unrated+=t.amt;
+    }else if(c)c.unrated+=t.amt;
+
+    // --- playbook (in-period genuine purchases on verified cards; alternatives = same person's verified cards) ---
+    if(!c||!i.known||!rate||t.amt<=0||!i.owner||!movable(t)||isHousing(ver,t))return;
+    let best=null,bestOther=null;
+    known().forEach(o=>{
+      if(o.owner!==i.owner)return;
+      const ov=crVersion(o.card,t.d),orate=ov?crRate(ov,t.name,t.group,t.d):null;
+      if(!orate)return;
+      const cents=orate.min*o.cpp; // guaranteed floor only
+      if(!best||cents>best.cents)best={o,cents};
+      if(o.label!==t.label&&(!bestOther||cents>bestOther.cents))bestOther={o,cents,orate};
+    });
+    if(!best)return;
+    const usedMax=rate.max*i.cpp,cat=t.cat||'Uncategorized';
+    const g=cats[cat]||(cats[cat]={cat,spend:0,right:0,missed:0,by:{}});
+    g.spend+=t.amt;
+    if(usedMax>=best.cents-1e-9)g.right+=t.amt;
+    const bb=g.by[best.o.label]||(g.by[best.o.label]={spend:0,cents:0});bb.spend+=t.amt;bb.cents+=best.cents*t.amt;
+    if(bestOther&&bestOther.cents>usedMax+1e-9){
+      const m=(bestOther.cents-usedMax)*t.amt/100;g.missed+=m;
+      const key=`${cat}|${t.label}|${bestOther.o.label}`;
+      const b2=buckets[key]||(buckets[key]={cat,used:c,usedRate:rate,better:bestOther.o,betterRate:bestOther.orate,spend:0,missed:0});
+      b2.spend+=t.amt;b2.missed+=m;
+      moves.push({d:t.d,name:t.name,cat,amt:t.amt,from:t.label,to:bestOther.o.label,toCents:bestOther.cents,gain:m});
+    }
+  });
+
+  // housing points per month in the selected period
+  Object.entries(house).forEach(([label,months])=>Object.entries(months).forEach(([mk,h])=>{
+    if(!h.housing)return;
+    const dt=new Date(+mk.slice(0,4),+mk.slice(5)-1,1);if(!inPeriod(dt))return;
+    const H=h.ver.housing,ratio=h.everyday/h.housing,tier=[...H.tiers].reverse().find(x=>ratio>=x.min_ratio);
+    const lo=Math.max(H.minimum_points||0,tier?h.housing*tier.mult:0),hi=Math.max(lo,H.ceiling_rate?h.housing*H.ceiling_rate:lo);
+    const c=stat(label);c.ptsMin+=lo;c.ptsMax+=hi;if(H.note)c.housingNotes.add(H.note);
+    (c.housing||(c.housing=[])).push({mk,housing:h.housing,ratio,lo,hi});
+  }));
+
+  // annual fee not present in the log (e.g. billed to a card but never entered): charge it from the policy
+  Object.values(stats).forEach(c=>{if(c.known&&c.card.fee_auto&&c.card.annual_fee>0&&c.fees===0)c.fees=cr.gran==='year'?c.card.annual_fee:c.card.annual_fee/12;});
+
+  return{moves:moves.sort((a,b)=>b.gain-a.gain),all:Object.values(stats),buckets:Object.values(buckets).sort((a,b)=>b.missed-a.missed),cats:Object.values(cats),noDate};
+}
+
+function crVerdict(c){
+  const valMin=c.ptsMin*c.cpp/100,valMax=c.ptsMax*c.cpp/100,net=valMin+c.credits-c.fees,netMax=valMax+c.credits-c.fees;
+  const hasFee=c.fees>0||(c.card&&c.card.annual_fee>0);
+  let txt;
+  if(!hasFee)txt='No annual fee — everything earned is a pure gain.';
+  else if(c.fees===0)txt=`Annual fee ${fmt$(c.card.annual_fee)}${c.card.fee_note?` (${c.card.fee_note})`:''} isn't in this period's log, so net is not computed.`;
+  else if(net>=0)txt=`Paid for itself: rewards + logged credits exceed the ${fmt$(c.fees)} fee.`;
+  else{
+    const need=c.fees-c.credits,be=c.ptsMin>0?need/c.ptsMin*100:null;
+    txt=`Short of the fee by ${fmt$(-net)}${be?` — breaks even at ${be.toFixed(1)}¢ per point (you valued it at ${c.cpp}¢)`:''}.`;
+  }
+  return{valMin,valMax,net,netMax,hasFee,txt};
+}
+
+function renderCardRewards(){
+  const sec=document.getElementById('cr-section'),body=document.getElementById('cr-body');
+  if(!state.colMap.paid_by||!state.rows.length||!cr.policy||!(cr.policy.cards||[]).length){sec.classList.add('hidden');return;}
+  sec.classList.remove('hidden');
+  const gr=document.getElementById('cr-gran');gr.classList.toggle('year',cr.gran==='month');
+  gr.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.g===cr.gran));
+  const periods=crPeriods();
+  if(!periods.length){body.innerHTML='<div class="ov-note">No dated card transactions.</div>';return;}
+  if(!periods.includes(cr.sel))cr.sel=periods[periods.length-1];
+  const sel=document.getElementById('cr-period');
+  sel.innerHTML=[...periods].reverse().map(k=>`<option value="${k}" ${k===cr.sel?'selected':''}>${crLabel(k)}</option>`).join('');
+
+  const R=crCompute(cr.sel),cards=R.all.sort((a,b)=>(b.known-a.known)||(b.spend-a.spend));
+  const known=cards.filter(c=>c.known),unk=cards.filter(c=>!c.known);
+  const totSpend=cards.reduce((t,c)=>t+c.spend,0),rated=known.reduce((t,c)=>t+c.rated,0);
+  const sum=known.reduce((t,c)=>{const v=crVerdict(c);t.lo+=v.valMin;t.hi+=v.valMax;t.fees+=c.fees;t.cred+=c.credits;return t;},{lo:0,hi:0,fees:0,cred:0});
+  const missedTotal=R.cats.reduce((t,g)=>t+g.missed,0),net=sum.lo+sum.cred-sum.fees;
+  const range=(a,b)=>Math.abs(b-a)<0.5?fmt$(a):`${fmt$(a)}–${fmt$(b)}`;
+
+  const rows=known.map(c=>{
+    const v=crVerdict(c),info=[c.card.caveat,...[...c.notes],...[...c.housingNotes]].filter(Boolean).join('\n');
+    let pill='<span class="cr-pill mute">No fee</span>';
+    if(c.fees>0){const n=v.net;pill=`<span class="cr-pill ${n>=0?'good':'bad'}">${n>=0?'+':'−'}${fmt$(Math.abs(n))} after fee</span>`;}
+    else if(v.hasFee)pill='<span class="cr-pill mute">Fee not logged</span>';
+    return`<tr><td><span class="cr-card-name">${esc(c.label)}</span>${info?` <span class="cr-i" title="${esc(info)}">ⓘ</span>`:''}</td>
+      <td>${money(c.spend)}</td><td><b>${range(v.valMin,v.valMax)}</b><div class="cr-sub">${Math.round(c.ptsMin).toLocaleString()}${Math.abs(c.ptsMax-c.ptsMin)>=0.5?`–${Math.round(c.ptsMax).toLocaleString()}`:''} pts</div></td><td>${pill}</td></tr>`;
+  }).join('');
+  const unkRow=unk.length?`<tr class="cr-unk"><td colspan="4">Not rated: ${unk.map(c=>esc(c.label)).join(', ')} <span class="cr-i" title="${esc('Card type unknown — nothing is guessed. Add it to card_rewards.json to rate it.')}">ⓘ</span> · ${fmt$(unk.reduce((t,c)=>t+c.spend,0))} spent</td></tr>`:'';
+
+  // playbook: best card per category, whether you used it, dollars missed
+  const play=R.cats.filter(g=>g.spend>=50).sort((a,b)=>(b.missed-a.missed)||(b.spend-a.spend)).slice(0,6).map(g=>{
+    const [bl,bv]=Object.entries(g.by).sort((x,y)=>y[1].spend-x[1].spend)[0],cents=bv.cents/bv.spend,pct=g.right/g.spend*100;
+    return`<tr><td><b>${esc(g.cat)}</b><div class="cr-sub">${fmt$(g.spend)} spent</div></td>
+      <td>${esc(bl.split(' - ').slice(1).join(' - ')||bl)}<div class="cr-sub">at least ${cents.toFixed(1)}¢ back per $1</div></td>
+      <td><div class="cr-meter"><span style="width:${pct.toFixed(0)}%;background:${pct>=90?'#10b981':pct>=60?'#f59e0b':'#f43f5e'}"></span></div><div class="cr-sub">${pct.toFixed(0)}% on the best card</div></td>
+      <td>${g.missed>=0.5?`<b class="pos">+${fmt$(g.missed)}</b>`:'<span style="color:var(--muted)">—</span>'}</td></tr>`;
+  }).join('');
+  const shortName=l=>l.split(' - ').slice(1).join(' - ')||l;
+  const top10=R.moves.slice(0,10).map(m=>`<tr><td><b>${esc(m.name.replace(/\b\w/g,x=>x.toUpperCase()))}</b><div class="cr-sub">${m.d.toLocaleDateString('en-US',{month:'short',day:'numeric'})} · ${esc(m.cat||'Uncategorized')} · ${fmt$(m.amt)}</div></td>
+      <td>${esc(shortName(m.from))}</td><td><b>${esc(shortName(m.to))}</b><div class="cr-sub">at least ${m.toCents.toFixed(1)}¢ per $1</div></td><td><b class="pos">+${fmt$(m.gain)}</b></td></tr>`).join('');
+  const top10Sum=R.moves.slice(0,10).reduce((t,m)=>t+m.gain,0);
+  const rentTip=known.filter(c=>c.housing&&c.housing.length).map(c=>{
+    const ver=crVersion(c.card,crDay(c.housing[0].mk+'-15')),H=ver&&ver.housing;if(!H)return'';
+    const low=c.housing.filter(h=>!H.tiers.some(t=>h.ratio>=t.min_ratio));if(!low.length)return'';
+    const avg=low.reduce((t,h)=>t+h.housing,0)/low.length,t0=H.tiers[0];
+    return`<div class="cr-tip"><div>🏠</div><div><b>Rent on ${esc(c.label.split(' - ').slice(1).join(' - ')||c.label)}</b> earned only ${H.minimum_points} points a month. Spend about <b>${fmt$(avg*t0.min_ratio)}</b> a month on that card and rent earns <b>${Math.round(avg*t0.mult).toLocaleString()}</b> instead.</div></div>`;
+  }).join('');
+
+  const how=(cr.policy.cards||[]).map(c=>{
+    if(c.status!=='verified')return`<h4>${esc(c.display)} — unknown</h4><div style="color:var(--muted)">${esc(c.unknown_reason||'')}</div>`;
+    const v=c.versions&&c.versions[0];
+    return`<h4>${esc(c.display)} <span style="color:var(--muted);font-weight:500">· checked ${esc((c.sources&&c.sources[0]&&c.sources[0].verified_on)||'')}</span></h4>
+      <ul>${(v?v.rules:[]).map(r=>`<li>${esc(r.label)}${r.until?` (through ${esc(r.until)})`:''}</li>`).join('')}${v&&v.base?`<li>${esc(v.base.label)}</li>`:''}${(v?v.rules:[]).filter(r=>r.assumes).map(r=>`<li><i>${esc(r.label)}:</i> ${esc(r.assumes)}</li>`).join('')}${(v?v.rules:[]).filter(r=>r.note).map(r=>`<li><i>${esc(r.label)}:</i> ${esc(r.note)}</li>`).join('')}${v&&v.base&&v.base.note?`<li><i>${esc(v.base.note)}</i></li>`:''}${v&&v.housing?`<li><b>Rent:</b> ${esc(v.housing.note||'')} Tiers: ${v.housing.tiers.map(t=>`≥${t.min_ratio*100}% → ${t.mult}x`).join(', ')}; below 25% → ${v.housing.minimum_points} points.</li>`:''}${c.caveat?`<li style="color:#b45309">⚠ ${esc(c.caveat)}</li>`:''}${c.fee_note?`<li>${esc(c.fee_note)}</li>`:''}<li>Annual fee ${fmt$(c.annual_fee||0)} · points valued at ${c.cpp}¢ each</li></ul>
+      ${(c.sources||[]).map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener">issuer terms ↗</a>`).join(' ')}`;
+  }).join('');
+
+  body.innerHTML=`
+    <div class="cr-stats">
+      <div class="cr-stat"><small>Rewards earned</small><b>${range(sum.lo,sum.hi)}</b></div>
+      <div class="cr-stat"><small>After fees &amp; credits</small><b class="${net<0?'neg':'pos'}">${money(net)}</b></div>
+      <div class="cr-stat hl"><small>Left on the table</small><b>${fmt$(missedTotal)}</b></div>
+    </div>
+    <div class="ov-card">
+      <div class="ov-table-wrap" style="margin:0"><table class="ov-table cr-table"><thead><tr><th>Card</th><th>Spent</th><th>Earned</th><th>Worth it?</th></tr></thead><tbody>${rows}${unkRow}</tbody></table></div>
+      <div class="cr-cov"><span style="width:${totSpend>0?rated/totSpend*100:0}%;background:#10b981"></span></div>
+      <div class="cr-sub" style="max-width:none">${totSpend>0?(rated/totSpend*100).toFixed(0):0}% of card spending could be rated</div>
+    </div>
+    ${top10?`<div class="ov-card">
+      <div class="ov-card-title">Top 10 charges to move</div>
+      <div class="ov-card-sub">Swapping these to the card shown would have added ${fmt$(top10Sum)}. Based on guaranteed rates only.</div>
+      <div class="ov-table-wrap" style="margin:0"><table class="ov-table cr-table"><thead><tr><th>Charge</th><th>Paid with</th><th>Use instead</th><th>Gain</th></tr></thead><tbody>${top10}</tbody></table></div>
+    </div>`:''}
+    ${(play||rentTip)?`<div class="ov-card">
+      <div class="ov-card-title">Best card for each category</div>
+      <div class="ov-card-sub">Only counted when a card you already hold was guaranteed to pay more.</div>
+      ${play?`<div class="ov-table-wrap" style="margin:0"><table class="ov-table cr-table"><thead><tr><th>Category</th><th>Best card</th><th>You used it</th><th>Missed</th></tr></thead><tbody>${play}</tbody></table></div>`:''}
+      ${rentTip?`<div style="margin-top:12px">${rentTip}</div>`:''}
+    </div>`:''}
+    <details class="ov-card"><summary>How this is calculated</summary>
+      <div class="cr-how">
+        <p style="margin-top:12px">Each purchase is matched to its card in <code>card_rewards.json</code> and earns that card's published rate for the purchase date. Refunds take points back; fee and statement-credit lines are kept separate. Anything without known terms is left unrated, never estimated. Ranges appear where your data can't show which rate applied.</p>
+        ${how}
+        ${R.noDate?`<p class="ov-note">${R.noDate} card row(s) without a readable date were skipped.</p>`:''}
+      </div>
+    </details>`;
+}
+document.querySelectorAll('#cr-gran button').forEach(b=>b.onclick=()=>{cr.gran=b.dataset.g;cr.sel='';renderCardRewards();});
+document.getElementById('cr-period').onchange=e=>{cr.sel=e.target.value;renderCardRewards();};
+
 function resetUpload(){
   document.getElementById('dashboard').classList.add('hidden');
   const us=document.getElementById('upload-screen');us.style.display='';us.classList.remove('hidden');
@@ -1995,7 +2360,7 @@ function resetUpload(){
     dz.querySelector('.drop-zone-text').innerHTML=`Drag & drop your ${k} CSV<br>or <strong>click to browse</strong>`;
   });
   document.getElementById('open-dash-btn').disabled=true;
-  ov.chipsInit=false;state.income=null;if(ov.chart){ov.chart.destroy();ov.chart=null;}
+  ov.chipsInit=false;state.income=null;state.payments=null;if(ov.chart){ov.chart.destroy();ov.chart=null;}
   state.filters.categories.clear();state.filters.trips.clear();state.filters.persons.clear();
   document.getElementById('search-input').value='';document.getElementById('filter-date-from').value='';document.getElementById('filter-date-to').value='';
   Object.values(state.charts).forEach(c=>c.destroy());state.charts={};

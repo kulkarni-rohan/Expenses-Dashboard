@@ -39,6 +39,14 @@ INCOME_PATTERNS = {
 }
 
 
+PAYMENT_PATTERNS = {
+    'payee':  ['to_whom', 'paid_to', 'payee', 'recipient', 'received_by', 'to'],
+    'payer':  ['who_paid', 'paid_by', 'payer', 'from'],
+    'date':   ['date', 'paid_on', 'when'],
+    'amount': ['amount', 'total', 'value', 'sum'],
+}
+
+
 def detect_columns(headers, patterns=None):
     """Auto-detect which CSV columns map to expense (or income) fields.
 
@@ -113,6 +121,21 @@ def config():
     except (OSError, ValueError):
         pass
     return jsonify(out)
+
+
+CARD_REWARDS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'card_rewards.json')
+
+
+@app.route('/card_rewards')
+def card_rewards():
+    """Card rewards policy from card_rewards.json (re-read on every request so edits show after a reload)."""
+    try:
+        with open(CARD_REWARDS_FILE, encoding='utf-8') as f:
+            return jsonify(json.load(f))
+    except FileNotFoundError:
+        return jsonify({'cards': [], 'error': 'card_rewards.json not found'})
+    except ValueError as e:
+        return jsonify({'cards': [], 'error': f'card_rewards.json is not valid JSON: {e}'})
 
 
 @app.route('/')
@@ -211,10 +234,21 @@ def artifacts_data():
         found.append({'fileName': name, 'headers': headers, 'rows': rows, 'count': len(rows), 'exp': exp, 'inc': inc})
 
     good = [f for f in found if 'error' not in f]
-    out = {'expense': None, 'income': None, 'warnings': [f"{f['fileName']}: {f['error']}" for f in found if 'error' in f]}
+    out = {'expense': None, 'income': None, 'payments': None,
+           'warnings': [f"{f['fileName']}: {f['error']}" for f in found if 'error' in f]}
 
     def payload(f, patterns):
         return {k: f[k] for k in ('fileName', 'headers', 'rows', 'count')} | {'column_map': detect_columns(f['headers'], patterns)}
+
+    # Person-to-person payment log: has an explicit "to whom"/payee column plus a payer column.
+    def is_payments(f):
+        cm = detect_columns(f['headers'], PAYMENT_PATTERNS)
+        return all(k in cm for k in ('payee', 'payer', 'amount')) and normalize(cm['payee']) in PAYMENT_PATTERNS['payee']
+
+    pay = next((f for f in good if is_payments(f)), None)
+    if pay:
+        out['payments'] = payload(pay, PAYMENT_PATTERNS)
+        good = [f for f in good if f is not pay]
 
     if len(good) == 1:
         f = good[0]
