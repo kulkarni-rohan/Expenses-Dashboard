@@ -104,6 +104,8 @@ def load_catalog():
         'discount': [w.lower() for w in raw.get('discount_words', [])],
         'volume_words': {stem(w) for w in raw.get('volume_words', [])},
         'plu': {str(k): v for k, v in (raw.get('plu') or {}).items()},
+        'dining_stores': [w.lower() for w in raw.get('dining_stores', [])],
+        'dining_words': [w.lower() for w in raw.get('dining_words', [])],
         'by_name': {e['name']: e for e in entries},
         'vocab': sorted({w for e in entries for w in e['alias'] if len(w) >= 4}),
     }
@@ -1063,6 +1065,16 @@ def best_rep(items):
     return max(items, key=rank)
 
 
+def is_dining(text, store, cat):
+    """Restaurant / cafe receipts (eating out) are kept out of the grocery price analysis. A known restaurant chain in
+    the header, or at least two restaurant-only words (tip, gratuity, server, table, guests, dine in...)."""
+    low = text.lower()
+    head = '\n'.join(low.splitlines()[:12])
+    if any(_word_hit(w, head) or _word_hit(w, (store or '').lower()) for w in cat['dining_stores']):
+        return True
+    return sum(1 for w in cat['dining_words'] if re.search(r'(?<![a-z])' + re.escape(w) + r'(?![a-z])', low)) >= 2
+
+
 def parse_variants(texts, filename=''):
     """Parse every OCR reading, then vote line by line and check the result against the receipt's own subtotal."""
     results = []
@@ -1087,6 +1099,7 @@ def parse_variants(texts, filename=''):
     base['date'] = wmodal('date')                            # OCR misreads a digit now and then: majority wins
     ref = wmodal('subtotal') or wmodal('total')
     base['subtotal'] = ref
+    base['dining'] = is_dining('\n'.join(split_weight(t)[1] for t in texts[:3]), base['store'], load_catalog())
     items, exact = consensus_items(results, ref)
     base['items'] = items
     base['warnings'] = []

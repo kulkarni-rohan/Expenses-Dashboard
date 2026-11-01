@@ -1045,15 +1045,27 @@
         "chivda",
         "kurkure"
       ],
-      "Masala / Spices": [
-        "masala",
-        "turmeric",
-        "cumin",
-        "spice"
-      ],
+      "Masala / Spices": {
+        "aliases": [
+          "masala",
+          "turmeric",
+          "cumin",
+          "spice"
+        ],
+        "exclude": [
+          "boondi",
+          "chip",
+          "lays",
+          "lay"
+        ]
+      },
       "Idli / Dosa Rice": [
         "idli rice",
         "dosa"
+      ],
+      "Boondi": [
+        "boondi masala",
+        "boondi"
       ]
     },
     "Beverages": {
@@ -1132,7 +1144,12 @@
     "Snacks & Frozen": {
       "Chips": {
         "aliases": [
-          "chip"
+          "chip",
+          "lays",
+          "magic masala",
+          "pringles",
+          "doritos",
+          "cheetos"
         ],
         "exclude": [
           "chocolate",
@@ -1190,5 +1207,53 @@
     "4225": "Avocado",
     "3507": "Apple"
   },
-  "_plu": "Produce sticker codes (PLU). Only used when the item name can't be matched."
+  "_plu": "Produce sticker codes (PLU). Only used when the item name can't be matched.",
+  "dining_stores": [
+    "mcdonald",
+    "starbucks",
+    "chipotle",
+    "subway",
+    "panda express",
+    "taco bell",
+    "burger king",
+    "domino",
+    "pizza hut",
+    "kfc",
+    "wendy",
+    "chick-fil-a",
+    "chick fil a",
+    "in-n-out",
+    "panera",
+    "dunkin",
+    "five guys",
+    "shake shack",
+    "jamba",
+    "peet",
+    "blue bottle",
+    "sweetgreen",
+    "olive garden",
+    "applebee",
+    "denny",
+    "ihop",
+    "cheesecake factory",
+    "pf chang"
+  ],
+  "dining_words": [
+    "gratuity",
+    "suggested tip",
+    "tip",
+    "server",
+    "table",
+    "guests",
+    "guest count",
+    "dine in",
+    "dine-in",
+    "take out",
+    "takeout",
+    "eat in",
+    "party of",
+    "check #",
+    "cover charge"
+  ],
+  "_dining": "Restaurant / cafe receipts are skipped in the analysis. A receipt counts as dining out if its header names a chain in dining_stores, or it contains two or more dining_words."
 }
