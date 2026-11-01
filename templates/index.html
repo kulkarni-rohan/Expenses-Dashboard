@@ -509,6 +509,18 @@
     .an-thumb { width:40px; height:50px; border-radius:8px; object-fit:cover; border:1px solid var(--border); cursor:zoom-in; display:block; margin-left:auto; transition:transform .15s,box-shadow .15s; background:var(--surface); }
     .an-thumb:hover { transform:scale(1.12) rotate(-2deg); box-shadow:var(--shadow); }
     .an-pdf { width:40px; height:50px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:20px; background:var(--surface); border:1px solid var(--border); cursor:pointer; margin-left:auto; }
+    .an-chartcard { background:linear-gradient(180deg,var(--surface),color-mix(in srgb,var(--surface) 92%,var(--primary-pale))); }
+    .an-chartcard.dark { background:radial-gradient(120% 140% at 0% 0%,#1e1b4b 0%,#0f172a 55%,#0b1220 100%); border-color:#1e293b; box-shadow:0 18px 40px -22px rgba(0,0,0,.7); }
+    .an-chartcard.dark .ov-card-title { color:#f1f5f9; } .an-chartcard.dark .ov-card-sub { color:#94a3b8; }
+    .an-chart-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:10px; }
+    .an-chartbox { position:relative; height:330px; }
+    .an-legend { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .an-pill { display:inline-flex; align-items:center; gap:7px; border:1.5px solid color-mix(in srgb,var(--c) 45%,transparent); background:color-mix(in srgb,var(--c) 12%,transparent); color:inherit; font:600 12.5px Inter,sans-serif; padding:5px 12px 5px 9px; border-radius:20px; cursor:pointer; transition:transform .15s,opacity .2s,background .2s; }
+    .an-pill i { width:10px; height:10px; border-radius:50%; background:var(--c); box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 28%,transparent); }
+    .an-pill b { font-weight:800; font-variant-numeric:tabular-nums; opacity:.8; }
+    .an-pill:hover { transform:translateY(-2px); }
+    .an-pill.off { opacity:.4; background:transparent; } .an-pill.off i { background:transparent; box-shadow:inset 0 0 0 2px var(--c); }
+    .an-chartcard.dark .an-pill { color:#e2e8f0; }
     .an-table td { white-space:nowrap; }
     .an-table td:nth-child(2) { font-weight:700; }
     .an-table tbody tr { cursor:default; } .an-table tbody tr:hover { transform:none; }
@@ -2589,7 +2601,9 @@ function anResult(){
       <div class="an-seg-row" style="margin-bottom:6px"><div><div class="ov-card-title">Store ranking</div><div class="ov-card-sub" style="margin-bottom:0">Price ${U.t.toLowerCase()} — click a store to filter the purchases below.</div></div>
         ${seg('an-rank',[['avg','Average'],['latest','Latest'],['best','Best deal']],an.rank)}</div>
       <div style="margin-top:14px" id="an-board">${board}</div></div>
-    ${dated>=2?`<div class="ov-card ov-anim" style="--i:5"><div class="ov-card-title">Price over time</div><div class="ov-card-sub">Each dot is one purchase, ${U.t.toLowerCase()}.</div><div class="ov-chart" style="height:290px"><canvas id="an-chart"></canvas></div></div>`:''}
+    ${dated>=2?`<div class="ov-card an-chartcard ov-anim" id="an-chartcard" style="--i:5">
+      <div class="an-chart-head"><div><div class="ov-card-title">Price over time</div><div class="ov-card-sub" style="margin-bottom:0">${U.t} at each shop. Click a shop to hide or show its line.</div></div><div class="an-legend" id="an-legend"></div></div>
+      <div class="an-chartbox"><canvas id="an-chart"></canvas></div></div>`:''}
     <div class="ov-card ov-anim" style="--i:6">
       <div class="an-seg-row" style="margin-bottom:6px"><div><div class="ov-card-title">Every purchase${an.store?` · ${esc(an.store)} <a href="#" id="an-clear" style="font-size:12.5px;color:var(--primary);font-weight:700;margin-left:6px">show all stores</a>`:''}</div><div class="ov-card-sub" style="margin-bottom:0">Tap a receipt to see the photo the numbers came from.</div></div>
         ${seg('an-sort',[['price','Cheapest first'],['date','Newest first']],an.sort)}</div>
@@ -2605,15 +2619,46 @@ function anResult(){
   document.getElementById('an-board').onclick=e=>{const r=e.target.closest('[data-s]');if(r){an.store=an.store===r.dataset.s?'':r.dataset.s;anResult();}};
   const clr=document.getElementById('an-clear');if(clr)clr.onclick=e=>{e.preventDefault();an.store='';anResult();};
   box.querySelectorAll('[data-r]').forEach(el=>{if(el.closest('table'))el.onclick=()=>anOpenReceipt(el.dataset.r,+el.dataset.l);});
-  if(dated>=2){
-    const ds=stats.map(s=>({label:s.store,borderColor:colorOf[s.store],backgroundColor:colorOf[s.store],borderWidth:2.5,tension:.25,pointRadius:5,pointHoverRadius:8,
-      data:s.rows.filter(r=>r.date).map(r=>({x:+new Date(r.date+'T00:00:00'),y:r.unit_price,r})).sort((a,b)=>a.x-b.x)}));
-    an.chart=new Chart(document.getElementById('an-chart'),{type:'line',data:{datasets:ds},options:{responsive:true,maintainAspectRatio:false,parsing:false,interaction:{mode:'nearest',intersect:true},
-      scales:{x:{type:'linear',grid:{display:false},ticks:{maxTicksLimit:7,callback:v=>new Date(v).toLocaleDateString('en-US',{month:'short',year:'2-digit'})}},
-              y:{grid:{color:'#eef2f7'},ticks:{callback:v=>'$'+(+v.toFixed(2))}}},
-      plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8}},tooltip:{callbacks:{title:c=>anDate(c[0].raw.r.date),label:c=>`${c.dataset.label}: ${anP(c.raw.y)} ${U.t.toLowerCase()} (${c.raw.r.qty_label})`}}},
-      onClick:(e,els)=>{if(els.length){const r=ds[els[0].datasetIndex].data[els[0].index].r;anOpenReceipt(r.rid,r.line);}}}});
-  }
+  if(dated>=2)anDrawChart(stats,colorOf,U,rows);
+}
+
+// Chart colours that follow the page (or the system) light/dark setting; redrawn when that changes.
+function anTheme(){
+  const bg=(getComputedStyle(document.querySelector('.ov-card')||document.body).backgroundColor.match(/[\d.]+/g)||[255,255,255]).slice(0,3).map(Number);
+  const dark=(0.299*bg[0]+0.587*bg[1]+0.114*bg[2])<110||matchMedia('(prefers-color-scheme: dark)').matches;
+  return dark?{dark,text:'#e2e8f0',muted:'#94a3b8',grid:'rgba(148,163,184,.16)',tipBg:'#0b1220',tipText:'#f1f5f9',ring:'#0f172a'}
+             :{dark,text:'#0f172a',muted:'#64748b',grid:'rgba(100,116,139,.16)',tipBg:'#ffffff',tipText:'#0f172a',ring:'#ffffff'};
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(an.sel&&!document.getElementById('tab-analysis').classList.contains('hidden'))anResult();});
+
+function anDrawChart(stats,colorOf,U,rows){
+  const T=anTheme(),card=document.getElementById('an-chartcard'),ctx=document.getElementById('an-chart').getContext('2d');
+  card.classList.toggle('dark',T.dark);
+  const hex=(c,a)=>{const n=parseInt(c.slice(1),16);return `rgba(${n>>16},${n>>8&255},${n&255},${a})`;};
+  const fillFor=c=>context=>{const a=context.chart.chartArea;if(!a)return hex(c,.15);const g=context.chart.ctx.createLinearGradient(0,a.top,0,a.bottom);g.addColorStop(0,hex(c,T.dark?.28:.16));g.addColorStop(1,hex(c,0));return g;};
+  const pts=s=>s.rows.filter(r=>r.date).map(r=>({x:+new Date(r.date+'T00:00:00'),y:r.unit_price,r})).sort((a,b)=>a.x-b.x);
+  const ds=stats.map(s=>{const c=colorOf[s.store],d=pts(s);return {label:s.store,data:d,borderColor:c,backgroundColor:fillFor(c),fill:d.length>1,
+    borderWidth:3,tension:.35,cubicInterpolationMode:'monotone',pointRadius:d.map(()=>4.5),pointHoverRadius:8,pointBackgroundColor:c,pointBorderColor:T.ring,pointBorderWidth:2,
+    pointHoverBorderWidth:3,spanGaps:true,_n:d.length};});
+  const all=ds.flatMap(d=>d.data.map(p=>p.y)),lo=Math.min(...all),hi=Math.max(...all),pad=(hi-lo||hi*.2||1)*.18;
+  // a shop bought from only once has nothing to connect: show it as a faint level line across the chart
+  const guides={id:'guides',beforeDatasetsDraw(ch){const {ctx:c,chartArea:a,scales:{y}}=ch;ch.data.datasets.forEach((d,i)=>{if(d._n!==1||!ch.isDatasetVisible(i))return;
+      const yy=y.getPixelForValue(d.data[0].y);c.save();c.setLineDash([6,6]);c.strokeStyle=hex(d.borderColor,.55);c.lineWidth=2;c.beginPath();c.moveTo(a.left,yy);c.lineTo(a.right,yy);c.stroke();c.restore();});}};
+  const best={id:'best',afterDatasetsDraw(ch){const {ctx:c,chartArea:a,scales:{y}}=ch,yy=y.getPixelForValue(lo);c.save();c.setLineDash([2,5]);c.strokeStyle='#10b981';c.lineWidth=1.5;c.beginPath();c.moveTo(a.left,yy);c.lineTo(a.right,yy);c.stroke();
+      c.setLineDash([]);c.font='700 11px Inter,sans-serif';const t='Lowest '+anP(lo),w=c.measureText(t).width+14;c.fillStyle='#10b981';c.beginPath();c.roundRect(a.right-w-4,yy-22,w,18,9);c.fill();c.fillStyle='#fff';c.fillText(t,a.right-w+3,yy-9);c.restore();}};
+  const cross={id:'cross',afterDraw(ch){const t=ch.tooltip;if(!t||!t.opacity||!t.dataPoints||!t.dataPoints.length)return;const x=t.dataPoints[0].element.x,a=ch.chartArea,c=ch.ctx;
+      c.save();c.setLineDash([4,4]);c.strokeStyle=T.muted;c.globalAlpha=.55;c.beginPath();c.moveTo(x,a.top);c.lineTo(x,a.bottom);c.stroke();c.restore();}};
+  an.chart=new Chart(ctx,{type:'line',data:{datasets:ds},plugins:[guides,best,cross],options:{responsive:true,maintainAspectRatio:false,parsing:false,
+    animation:{duration:900,easing:'easeOutCubic'},layout:{padding:{top:14,right:8}},interaction:{mode:'nearest',axis:'x',intersect:false},
+    scales:{x:{type:'linear',grid:{display:false},border:{display:false},ticks:{color:T.muted,font:{size:11.5,weight:600},maxTicksLimit:7,padding:8,callback:v=>new Date(v).toLocaleDateString('en-US',{month:'short',year:'2-digit'})}},
+            y:{min:Math.max(0,lo-pad),max:hi+pad,grid:{color:T.grid,drawTicks:false},border:{display:false,dash:[4,4]},ticks:{color:T.muted,font:{size:11.5,weight:600},padding:10,maxTicksLimit:6,callback:v=>'$'+(+v.toFixed(2))}}},
+    plugins:{legend:{display:false},tooltip:{backgroundColor:T.tipBg,titleColor:T.tipText,bodyColor:T.tipText,borderColor:T.grid,borderWidth:1,padding:12,cornerRadius:12,boxPadding:6,usePointStyle:true,titleFont:{weight:700,size:12.5},bodyFont:{size:12.5},
+      callbacks:{title:c=>anDate(c[0].raw.r.date),label:c=>` ${c.dataset.label}  ${anP(c.raw.y)} ${U.t.toLowerCase()} · ${c.raw.r.qty_label}`}}},
+    onClick:(e,els)=>{if(els.length){const r=ds[els[0].datasetIndex].data[els[0].index].r;anOpenReceipt(r.rid,r.line);}}}});
+  // legend: coloured pills that show the latest price and toggle the line
+  const lg=document.getElementById('an-legend');
+  lg.innerHTML=stats.map((s,i)=>`<button class="an-pill" data-i="${i}" style="--c:${colorOf[s.store]}"><i></i>${esc(s.store)}<b>${anP(s.latest)}</b></button>`).join('');
+  lg.onclick=e=>{const b=e.target.closest('.an-pill');if(!b)return;const i=+b.dataset.i,show=!an.chart.isDatasetVisible(i);an.chart.setDatasetVisibility(i,show);b.classList.toggle('off',!show);an.chart.update();};
 }
 
 function anNotes(){
