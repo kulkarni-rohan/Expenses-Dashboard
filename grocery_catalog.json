@@ -1,0 +1,1194 @@
+{
+  "_readme": "Edit freely. 'items' maps group -> item -> aliases. An item matches when ALL words of one of its aliases appear on the receipt line (plurals ignored); the alias with the most words wins, so 'orange juice' beats 'orange'. Use the object form {aliases, exclude, kind} to block false matches or force a unit kind (weight | volume | count). Lines that match nothing are still analysed under their cleaned-up name.",
+  "stores": {
+    "Costco": [
+      "costco"
+    ],
+    "Trader Joe's": [
+      "trader joe"
+    ],
+    "Walmart": [
+      "walmart",
+      "wal-mart",
+      "wal mart"
+    ],
+    "Safeway": [
+      "safeway"
+    ],
+    "Whole Foods": [
+      "whole foods"
+    ],
+    "Target": [
+      "target"
+    ],
+    "Kroger": [
+      "kroger"
+    ],
+    "Aldi": [
+      "aldi"
+    ],
+    "Sprouts": [
+      "sprouts"
+    ],
+    "H-E-B": [
+      "h-e-b",
+      "heb "
+    ],
+    "Publix": [
+      "publix"
+    ],
+    "Lidl": [
+      "lidl"
+    ],
+    "Sam's Club": [
+      "sam's club",
+      "sams club"
+    ],
+    "Amazon Fresh": [
+      "amazon fresh"
+    ],
+    "Patel Brothers": [
+      "patel brothers"
+    ],
+    "99 Ranch": [
+      "99 ranch"
+    ],
+    "Mi Pueblo": [
+      "mi pueblo"
+    ],
+    "Lucky": [
+      "lucky supermarket",
+      "lucky "
+    ],
+    "Nob Hill": [
+      "nob hill"
+    ],
+    "Grocery Outlet": [
+      "grocery outlet"
+    ],
+    "Smart & Final": [
+      "smart & final",
+      "smart and final"
+    ],
+    "Instacart": [
+      "instacart"
+    ],
+    "Indian Bazaar": [
+      "indian bazaar"
+    ],
+    "Felipe's Market": [
+      "felipe"
+    ]
+  },
+  "abbreviations": {
+    "org": "organic",
+    "orgnc": "organic",
+    "bnls": "boneless",
+    "sknls": "skinless",
+    "chkn": "chicken",
+    "chix": "chicken",
+    "brst": "breast",
+    "bnna": "banana",
+    "bnnas": "banana",
+    "grn": "green",
+    "yel": "yellow",
+    "whl": "whole",
+    "wht": "white",
+    "brn": "brown",
+    "blk": "black",
+    "chse": "cheese",
+    "chs": "cheese",
+    "mozz": "mozzarella",
+    "parm": "parmesan",
+    "strwbry": "strawberry",
+    "strawbry": "strawberry",
+    "blubry": "blueberry",
+    "rspbry": "raspberry",
+    "avcdo": "avocado",
+    "avoc": "avocado",
+    "tmto": "tomato",
+    "ptato": "potato",
+    "crrt": "carrot",
+    "brocc": "broccoli",
+    "cucmbr": "cucumber",
+    "lett": "lettuce",
+    "spnch": "spinach",
+    "mshrm": "mushroom",
+    "mlk": "milk",
+    "yogrt": "yogurt",
+    "ygrt": "yogurt",
+    "btr": "butter",
+    "grd": "ground",
+    "bf": "beef",
+    "frzn": "frozen",
+    "fz": "frozen",
+    "jce": "juice",
+    "oj": "orange juice",
+    "wtr": "water",
+    "bttl": "bottle",
+    "swt": "sweet",
+    "pnut": "peanut",
+    "brd": "bread",
+    "tort": "tortilla",
+    "cnd": "canned",
+    "crm": "cream",
+    "hvy": "heavy",
+    "ks": "kirkland",
+    "gv": "great value",
+    "lg": "large",
+    "sm": "small",
+    "med": "medium",
+    "vegt": "vegetable",
+    "veg": "vegetable",
+    "oliv": "olive",
+    "ev": "extra virgin",
+    "evoo": "olive oil",
+    "pb": "peanut butter",
+    "sprkl": "sparkling",
+    "sprkling": "sparkling",
+    "chcolate": "chocolate",
+    "choc": "chocolate",
+    "chkpea": "chickpea",
+    "toma": "tomato",
+    "md": "medium",
+    "crisp": "crisp"
+  },
+  "ignore_start": [
+    "subtotal",
+    "sub total",
+    "total",
+    "tax",
+    "sales tax",
+    "balance",
+    "change",
+    "cash",
+    "credit",
+    "debit",
+    "visa",
+    "mastercard",
+    "amex",
+    "discover",
+    "tender",
+    "payment",
+    "amount due",
+    "grand total",
+    "items sold",
+    "number of items",
+    "# of items",
+    "item count",
+    "card",
+    "account",
+    "approval",
+    "auth",
+    "ref",
+    "terminal",
+    "transaction",
+    "trans",
+    "cashier",
+    "store",
+    "thank",
+    "welcome",
+    "survey",
+    "member",
+    "rewards",
+    "points",
+    "bag fee",
+    "crv",
+    "deposit",
+    "tip",
+    "gratuity",
+    "order",
+    "invoice",
+    "date",
+    "time",
+    "tel",
+    "phone",
+    "fax",
+    "you saved",
+    "total savings",
+    "savings",
+    "your savings",
+    "check",
+    "tendered",
+    "total tendered",
+    "change due"
+  ],
+  "ignore_anywhere": [
+    "www.",
+    ".com",
+    "thank you",
+    "have a nice",
+    "come again",
+    "survey",
+    "customer copy",
+    "merchant copy",
+    "approved",
+    "chip read",
+    "contactless",
+    "aid:",
+    "tc#",
+    "st#",
+    "op#",
+    "visa ",
+    "mastercard",
+    "debit card",
+    "credit card",
+    "tender",
+    "approval",
+    "apprvl",
+    "items sold",
+    "purchase",
+    "to pay",
+    "amex",
+    "customer",
+    "retain",
+    "transaction",
+    "balance"
+  ],
+  "discount_words": [
+    "coupon",
+    "discount",
+    "saving",
+    "off",
+    "instant",
+    "promo",
+    "markdown",
+    "club",
+    "sale price",
+    "mfr",
+    "manufacturer"
+  ],
+  "volume_words": [
+    "milk",
+    "juice",
+    "water",
+    "soda",
+    "cola",
+    "oil",
+    "beer",
+    "wine",
+    "drink",
+    "broth",
+    "stock",
+    "vinegar",
+    "cream",
+    "sauce",
+    "seltzer",
+    "kombucha",
+    "lemonade",
+    "tea",
+    "coffee"
+  ],
+  "items": {
+    "Fruit": {
+      "Banana": [
+        "banana"
+      ],
+      "Apple": {
+        "aliases": [
+          "apple"
+        ],
+        "exclude": [
+          "juice",
+          "sauce",
+          "pie",
+          "cider",
+          "cinnamon"
+        ]
+      },
+      "Orange": {
+        "aliases": [
+          "orange",
+          "navel"
+        ],
+        "exclude": [
+          "juice",
+          "chicken",
+          "marmalade",
+          "soda"
+        ]
+      },
+      "Clementine / Mandarin": [
+        "clementine",
+        "cutie",
+        "mandarin",
+        "tangerine"
+      ],
+      "Lemon": {
+        "aliases": [
+          "lemon"
+        ],
+        "exclude": [
+          "juice",
+          "lemonade",
+          "pepper",
+          "tea"
+        ]
+      },
+      "Lime": {
+        "aliases": [
+          "lime"
+        ],
+        "exclude": [
+          "juice",
+          "soda"
+        ]
+      },
+      "Grapes": {
+        "aliases": [
+          "grape"
+        ],
+        "exclude": [
+          "juice",
+          "jelly",
+          "tomato",
+          "seed oil"
+        ]
+      },
+      "Strawberry": {
+        "aliases": [
+          "strawberry"
+        ],
+        "exclude": [
+          "jam",
+          "yogurt",
+          "ice cream"
+        ]
+      },
+      "Blueberry": {
+        "aliases": [
+          "blueberry"
+        ],
+        "exclude": [
+          "muffin",
+          "jam",
+          "yogurt",
+          "bagel"
+        ]
+      },
+      "Raspberry": [
+        "raspberry"
+      ],
+      "Blackberry": [
+        "blackberry"
+      ],
+      "Avocado": [
+        "avocado",
+        "hass"
+      ],
+      "Mango": [
+        "mango"
+      ],
+      "Pineapple": {
+        "aliases": [
+          "pineapple"
+        ],
+        "exclude": [
+          "juice"
+        ]
+      },
+      "Watermelon": [
+        "watermelon"
+      ],
+      "Cantaloupe": [
+        "cantaloupe",
+        "melon"
+      ],
+      "Peach": [
+        "peach",
+        "nectarine"
+      ],
+      "Pear": [
+        "pear"
+      ],
+      "Plum": [
+        "plum"
+      ],
+      "Cherry": [
+        "cherry"
+      ],
+      "Kiwi": [
+        "kiwi"
+      ],
+      "Pomegranate": [
+        "pomegranate"
+      ],
+      "Papaya": [
+        "papaya"
+      ],
+      "Persimmon": [
+        "persimmon"
+      ],
+      "Grapefruit": [
+        "grapefruit"
+      ],
+      "Fig": [
+        "fig"
+      ],
+      "Apricot": [
+        "apricot"
+      ],
+      "Guava": [
+        "guava"
+      ],
+      "Dates": [
+        "date medjool",
+        "medjool"
+      ]
+    },
+    "Vegetables": {
+      "Tomato": {
+        "aliases": [
+          "tomato",
+          "roma"
+        ],
+        "exclude": [
+          "sauce",
+          "paste",
+          "soup",
+          "juice",
+          "ketchup",
+          "diced",
+          "crushed",
+          "canned",
+          "salsa"
+        ]
+      },
+      "Cherry Tomato": [
+        "cherry tomato",
+        "grape tomato",
+        "cocktail tomato"
+      ],
+      "Onion": {
+        "aliases": [
+          "onion"
+        ],
+        "exclude": [
+          "ring",
+          "soup",
+          "dip",
+          "powder",
+          "dried"
+        ]
+      },
+      "Green Onion": [
+        "green onion",
+        "scallion",
+        "spring onion"
+      ],
+      "Garlic": {
+        "aliases": [
+          "garlic"
+        ],
+        "exclude": [
+          "bread",
+          "powder",
+          "sauce",
+          "salt",
+          "naan"
+        ]
+      },
+      "Potato": {
+        "aliases": [
+          "potato",
+          "russet"
+        ],
+        "exclude": [
+          "chip",
+          "salad",
+          "frozen",
+          "fries"
+        ]
+      },
+      "Sweet Potato": [
+        "sweet potato",
+        "yam"
+      ],
+      "Carrot": [
+        "carrot"
+      ],
+      "Broccoli": [
+        "broccoli"
+      ],
+      "Cauliflower": [
+        "cauliflower"
+      ],
+      "Spinach": [
+        "spinach"
+      ],
+      "Lettuce": [
+        "lettuce",
+        "romaine",
+        "iceberg"
+      ],
+      "Salad Mix": [
+        "spring mix",
+        "salad mix",
+        "mixed greens",
+        "salad kit",
+        "arugula"
+      ],
+      "Cucumber": [
+        "cucumber"
+      ],
+      "Bell Pepper": [
+        "bell pepper",
+        "capsicum"
+      ],
+      "Jalapeno": [
+        "jalapeno",
+        "serrano"
+      ],
+      "Zucchini": [
+        "zucchini"
+      ],
+      "Mushroom": [
+        "mushroom"
+      ],
+      "Celery": [
+        "celery"
+      ],
+      "Cabbage": [
+        "cabbage"
+      ],
+      "Kale": [
+        "kale"
+      ],
+      "Corn": {
+        "aliases": [
+          "corn"
+        ],
+        "exclude": [
+          "chip",
+          "tortilla",
+          "starch",
+          "syrup",
+          "bread",
+          "flake",
+          "dog"
+        ]
+      },
+      "Green Beans": [
+        "green bean"
+      ],
+      "Cilantro": [
+        "cilantro",
+        "coriander"
+      ],
+      "Ginger": {
+        "aliases": [
+          "ginger"
+        ],
+        "exclude": [
+          "ale",
+          "beer",
+          "snap"
+        ]
+      },
+      "Eggplant": [
+        "eggplant",
+        "brinjal"
+      ],
+      "Asparagus": [
+        "asparagus"
+      ],
+      "Okra": [
+        "okra"
+      ],
+      "Beet": [
+        "beet"
+      ],
+      "Radish": [
+        "radish"
+      ],
+      "Turnip": [
+        "turnip"
+      ],
+      "Squash": [
+        "squash",
+        "butternut"
+      ],
+      "Pumpkin": [
+        "pumpkin"
+      ],
+      "Bok Choy": [
+        "bok choy"
+      ],
+      "Parsley": [
+        "parsley"
+      ],
+      "Mint": [
+        "mint"
+      ],
+      "Basil": [
+        "basil"
+      ],
+      "Dill": [
+        "dill"
+      ],
+      "Leek": [
+        "leek"
+      ],
+      "Brussels Sprouts": [
+        "brussels sprout"
+      ]
+    },
+    "Dairy & Eggs": {
+      "Milk": {
+        "aliases": [
+          "milk"
+        ],
+        "exclude": [
+          "chocolate",
+          "almond",
+          "oat",
+          "soy",
+          "coconut",
+          "condensed",
+          "evaporated",
+          "cookie"
+        ],
+        "kind": "volume"
+      },
+      "Almond Milk": {
+        "aliases": [
+          "almond milk",
+          "almondmilk"
+        ],
+        "kind": "volume"
+      },
+      "Oat Milk": {
+        "aliases": [
+          "oat milk",
+          "oatmilk"
+        ],
+        "kind": "volume"
+      },
+      "Soy Milk": {
+        "aliases": [
+          "soy milk",
+          "soymilk"
+        ],
+        "kind": "volume"
+      },
+      "Eggs": {
+        "aliases": [
+          "egg"
+        ],
+        "exclude": [
+          "plant",
+          "noodle",
+          "roll",
+          "nog"
+        ],
+        "kind": "count"
+      },
+      "Butter": [
+        "butter"
+      ],
+      "Cheddar Cheese": [
+        "cheddar"
+      ],
+      "Mozzarella": [
+        "mozzarella"
+      ],
+      "Parmesan": [
+        "parmesan"
+      ],
+      "Cream Cheese": [
+        "cream cheese"
+      ],
+      "Shredded Cheese": [
+        "shredded cheese",
+        "shred cheese"
+      ],
+      "Cheese (other)": [
+        "cheese"
+      ],
+      "Yogurt": {
+        "aliases": [
+          "yogurt",
+          "yoghurt"
+        ],
+        "exclude": [
+          "greek"
+        ]
+      },
+      "Greek Yogurt": [
+        "greek yogurt",
+        "greek yoghurt"
+      ],
+      "Sour Cream": [
+        "sour cream"
+      ],
+      "Heavy Cream": {
+        "aliases": [
+          "heavy cream",
+          "whipping cream",
+          "heavy whipping"
+        ],
+        "kind": "volume"
+      },
+      "Half & Half": {
+        "aliases": [
+          "half and half",
+          "half & half",
+          "half half"
+        ],
+        "kind": "volume"
+      },
+      "Paneer": [
+        "paneer"
+      ],
+      "Coconut Milk": {
+        "aliases": [
+          "coconut milk"
+        ],
+        "kind": "volume"
+      }
+    },
+    "Meat & Seafood": {
+      "Chicken Breast": [
+        "chicken breast"
+      ],
+      "Chicken Thigh": [
+        "chicken thigh"
+      ],
+      "Chicken Wings": [
+        "chicken wing"
+      ],
+      "Whole Chicken": [
+        "whole chicken",
+        "rotisserie chicken"
+      ],
+      "Ground Beef": [
+        "ground beef",
+        "beef ground",
+        "ground chuck"
+      ],
+      "Ground Turkey": [
+        "ground turkey"
+      ],
+      "Steak": [
+        "steak",
+        "ribeye",
+        "sirloin",
+        "strip"
+      ],
+      "Pork Chop": [
+        "pork chop"
+      ],
+      "Bacon": [
+        "bacon"
+      ],
+      "Sausage": [
+        "sausage",
+        "bratwurst"
+      ],
+      "Ham": [
+        "ham"
+      ],
+      "Hot Dogs": [
+        "hot dog",
+        "frankfurter"
+      ],
+      "Salmon": [
+        "salmon"
+      ],
+      "Shrimp": [
+        "shrimp",
+        "prawn"
+      ],
+      "Tilapia": [
+        "tilapia"
+      ],
+      "Canned Tuna": [
+        "tuna"
+      ],
+      "Tofu": [
+        "tofu"
+      ]
+    },
+    "Bakery": {
+      "Bread": {
+        "aliases": [
+          "bread"
+        ],
+        "exclude": [
+          "crumb",
+          "stick",
+          "garlic"
+        ]
+      },
+      "Bagels": [
+        "bagel"
+      ],
+      "Tortillas": {
+        "aliases": [
+          "tortilla"
+        ],
+        "exclude": [
+          "chip"
+        ]
+      },
+      "Naan": [
+        "naan"
+      ],
+      "Pita": [
+        "pita"
+      ],
+      "Buns": [
+        "bun",
+        "roll"
+      ]
+    },
+    "Pantry": {
+      "Rice": {
+        "aliases": [
+          "rice"
+        ],
+        "exclude": [
+          "cake",
+          "krispies",
+          "vinegar",
+          "cracker",
+          "milk",
+          "noodle"
+        ]
+      },
+      "Basmati Rice": [
+        "basmati"
+      ],
+      "Pasta": [
+        "pasta",
+        "spaghetti",
+        "penne",
+        "fusilli",
+        "macaroni",
+        "linguine",
+        "rigatoni"
+      ],
+      "Flour": {
+        "aliases": [
+          "flour"
+        ],
+        "exclude": [
+          "tortilla"
+        ]
+      },
+      "Atta": [
+        "atta"
+      ],
+      "Sugar": {
+        "aliases": [
+          "sugar"
+        ],
+        "exclude": [
+          "snap",
+          "free"
+        ]
+      },
+      "Salt": {
+        "aliases": [
+          "salt"
+        ],
+        "exclude": [
+          "pepper",
+          "pretzel",
+          "butter",
+          "peanut",
+          "almond",
+          "cashew"
+        ]
+      },
+      "Olive Oil": {
+        "aliases": [
+          "olive oil"
+        ],
+        "kind": "volume"
+      },
+      "Vegetable Oil": {
+        "aliases": [
+          "vegetable oil",
+          "canola oil",
+          "cooking oil",
+          "avocado oil",
+          "sunflower oil"
+        ],
+        "kind": "volume"
+      },
+      "Peanut Butter": [
+        "peanut butter"
+      ],
+      "Jam / Jelly": [
+        "jelly",
+        "jam",
+        "preserves"
+      ],
+      "Honey": [
+        "honey"
+      ],
+      "Oats": [
+        "oatmeal",
+        "rolled oat",
+        "oats",
+        "oat"
+      ],
+      "Cereal": [
+        "cereal",
+        "granola"
+      ],
+      "Canned Beans": [
+        "black bean",
+        "kidney bean",
+        "chickpea",
+        "garbanzo",
+        "pinto bean",
+        "refried bean"
+      ],
+      "Lentils": [
+        "lentil",
+        "dal",
+        "daal"
+      ],
+      "Pasta Sauce": [
+        "tomato sauce",
+        "marinara",
+        "pasta sauce"
+      ],
+      "Canned Tomatoes": [
+        "diced tomato",
+        "crushed tomato",
+        "whole peeled",
+        "tomato paste"
+      ],
+      "Ketchup": [
+        "ketchup"
+      ],
+      "Mayonnaise": [
+        "mayo",
+        "mayonnaise"
+      ],
+      "Mustard": [
+        "mustard"
+      ],
+      "Soy Sauce": {
+        "aliases": [
+          "soy sauce"
+        ],
+        "kind": "volume"
+      },
+      "Hot Sauce": [
+        "hot sauce",
+        "sriracha"
+      ],
+      "Broth": {
+        "aliases": [
+          "broth",
+          "stock"
+        ],
+        "kind": "volume"
+      },
+      "Coffee": {
+        "aliases": [
+          "coffee"
+        ],
+        "exclude": [
+          "creamer",
+          "cake",
+          "ice cream",
+          "cold brew"
+        ]
+      },
+      "Tea": {
+        "aliases": [
+          "tea"
+        ],
+        "exclude": [
+          "iced",
+          "kombucha"
+        ]
+      },
+      "Almonds": {
+        "aliases": [
+          "almond"
+        ],
+        "exclude": [
+          "milk",
+          "butter"
+        ]
+      },
+      "Cashews": [
+        "cashew"
+      ],
+      "Walnuts": [
+        "walnut"
+      ],
+      "Peanuts": {
+        "aliases": [
+          "peanut"
+        ],
+        "exclude": [
+          "butter"
+        ]
+      },
+      "Nuts (mixed)": [
+        "mixed nut",
+        "trail mix"
+      ],
+      "Pistachios": [
+        "pistachio"
+      ],
+      "Bhujia / Namkeen": [
+        "bhujia",
+        "namkeen",
+        "chivda",
+        "kurkure"
+      ],
+      "Masala / Spices": [
+        "masala",
+        "turmeric",
+        "cumin",
+        "spice"
+      ],
+      "Idli / Dosa Rice": [
+        "idli rice",
+        "dosa"
+      ]
+    },
+    "Beverages": {
+      "Orange Juice": {
+        "aliases": [
+          "orange juice"
+        ],
+        "kind": "volume"
+      },
+      "Apple Juice": {
+        "aliases": [
+          "apple juice",
+          "apple cider"
+        ],
+        "kind": "volume"
+      },
+      "Juice (other)": {
+        "aliases": [
+          "juice"
+        ],
+        "kind": "volume"
+      },
+      "Bottled Water": {
+        "aliases": [
+          "water",
+          "spring water",
+          "purified water"
+        ],
+        "exclude": [
+          "melon",
+          "chestnut",
+          "cress"
+        ],
+        "kind": "volume"
+      },
+      "Sparkling Water": {
+        "aliases": [
+          "sparkling water",
+          "seltzer",
+          "la croix",
+          "lacroix",
+          "sparkling"
+        ],
+        "kind": "volume"
+      },
+      "Soda": {
+        "aliases": [
+          "soda",
+          "coke",
+          "pepsi",
+          "sprite",
+          "cola",
+          "dr pepper",
+          "ginger ale"
+        ],
+        "kind": "volume"
+      },
+      "Beer": {
+        "aliases": [
+          "beer",
+          "lager",
+          "ipa"
+        ],
+        "kind": "volume"
+      },
+      "Wine": {
+        "aliases": [
+          "wine"
+        ],
+        "exclude": [
+          "vinegar"
+        ],
+        "kind": "volume"
+      }
+    },
+    "Snacks & Frozen": {
+      "Chips": {
+        "aliases": [
+          "chip"
+        ],
+        "exclude": [
+          "chocolate",
+          "cookie"
+        ]
+      },
+      "Cookies": [
+        "cookie",
+        "chocolate chip"
+      ],
+      "Crackers": [
+        "cracker"
+      ],
+      "Popcorn": [
+        "popcorn"
+      ],
+      "Chocolate": {
+        "aliases": [
+          "chocolate"
+        ],
+        "exclude": [
+          "milk",
+          "chip",
+          "cookie",
+          "cereal"
+        ]
+      },
+      "Ice Cream": [
+        "ice cream",
+        "gelato"
+      ],
+      "Frozen Pizza": [
+        "pizza"
+      ],
+      "Frozen Vegetables": [
+        "frozen vegetable",
+        "frozen veg",
+        "frozen peas",
+        "frozen broccoli"
+      ]
+    }
+  },
+  "plu": {
+    "4011": "Banana",
+    "4395": "Papaya",
+    "3440": "Pomegranate",
+    "4060": "Broccoli",
+    "4562": "Carrot",
+    "4087": "Tomato",
+    "4727": "Potato",
+    "4053": "Lemon",
+    "4428": "Persimmon",
+    "4082": "Onion",
+    "4040": "Plum",
+    "4225": "Avocado",
+    "3507": "Apple"
+  },
+  "_plu": "Produce sticker codes (PLU). Only used when the item name can't be matched."
+}

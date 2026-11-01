@@ -98,3 +98,27 @@ Drop your expenses and income CSVs (any filenames) into the `artifacts/` folder
 and they load automatically on startup — the app works out which is which from
 the column headers. The whole folder is git-ignored, so your data is never
 committed. Manual upload still works via “Upload New CSVs”.
+
+---
+
+## Analysis tab: cheapest price per unit (receipts)
+
+Drop grocery receipt photos (`.jpg`, `.png`, `.heic`, …) or PDFs into the `receipts/` folder next to `artifacts/`.
+Only the OCR cache inside it (`receipts/.cache/`) is git-ignored; `artifacts/` is never uploaded. Open the **Analysis** tab, search for an item
+(e.g. *orange*) and see every store you bought it from, ranked by price per lb / gal / each, with the receipt photo.
+
+No LLM is involved and nothing leaves your computer. Each photo is cut out of its background, read by a local OCR
+engine (RapidOCR; Tesseract is used as a backup), and the readings vote line by line. A result is accepted when the
+items add up to the receipt's own subtotal. Items are named by rules in `grocery_catalog.json` (add aliases there to
+teach it new items or stores).
+
+```bash
+pip install -r requirements.txt
+```
+
+Optional extras: `pypdf` (PDF receipts), `pillow-heif` (iPhone HEIC photos), and `pytesseract` + `brew install tesseract`
+(an extra backup reader).
+
+- OCR results are cached in `receipts/.cache/`, so each photo is only read once.
+- A misread receipt? Put a `.txt` with the same name beside it and fix the text; it overrides the OCR.
+- The tab warns when a receipt's items don't add up to its subtotal.

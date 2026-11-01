@@ -464,6 +464,83 @@
     .ov-note { font-size:12.5px; color:var(--muted); margin-top:10px; line-height:1.5; }
     @media (prefers-reduced-motion:reduce){ .ov-anim{animation:none} .ov-kpi,.chip,.ov-bar-fill{transition:none} }
 
+    /* ── ANALYSIS (receipts) ── */
+    #tab-analysis { max-width:1100px; }
+    .an-search-wrap { position:relative; margin:6px 0 14px; z-index:30; }
+    .an-search { display:flex; align-items:center; gap:12px; background:var(--surface); border:2px solid var(--border); border-radius:20px; padding:6px 10px 6px 20px; box-shadow:0 10px 30px -18px rgba(99,102,241,.45); transition:border-color .2s,box-shadow .2s; }
+    .an-search:focus-within { border-color:var(--primary); box-shadow:0 0 0 5px rgba(99,102,241,.14),0 14px 34px -16px rgba(99,102,241,.5); }
+    .an-search input { flex:1; border:none; outline:none; background:none; font-family:inherit; font-size:19px; font-weight:700; padding:14px 0; color:var(--text); min-width:0; }
+    .an-search input::placeholder { color:#94a3b8; font-weight:600; }
+    .an-search .an-count { font-size:12.5px; font-weight:700; color:var(--primary); background:var(--primary-pale); border-radius:20px; padding:5px 12px; white-space:nowrap; }
+    .an-list { position:absolute; left:0; right:0; top:calc(100% + 8px); max-height:430px; overflow-y:auto; background:var(--surface); border:1px solid var(--border); border-radius:20px; box-shadow:0 24px 60px -20px rgba(15,23,42,.35); padding:8px; display:none; }
+    .an-list.open { display:block; animation:ovUp .22s cubic-bezier(.2,.8,.2,1) both; }
+    .an-gh { position:sticky; top:-8px; background:var(--surface); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; color:var(--muted); padding:10px 12px 6px; z-index:1; }
+    .an-opt { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border-radius:12px; cursor:pointer; font-size:14.5px; font-weight:600; }
+    .an-opt small { color:var(--muted); font-weight:500; font-size:12.5px; white-space:nowrap; }
+    .an-opt.hi,.an-opt:hover { background:var(--primary-pale); color:var(--primary-dark); }
+    .an-opt mark { background:#fde68a; color:inherit; border-radius:3px; padding:0 1px; }
+    .an-none { padding:22px; text-align:center; color:var(--muted); font-size:14px; }
+    .an-quick { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
+    .an-quick .chip { padding:6px 13px; }
+    .an-quick .chip small { color:var(--muted); font-weight:600; }
+    .an-quick .chip.sel small { color:rgba(255,255,255,.8); }
+    .an-seg-row { display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:16px; }
+    .an-seg-row .seg button { padding:7px 16px; }
+    .an-seg-row .seg .seg-thumb { width:var(--w); transform:translateX(var(--x)); transition:transform .3s cubic-bezier(.3,1.4,.5,1),width .3s; }
+    .an-title { font-size:26px; font-weight:800; letter-spacing:-.6px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+    .an-title small { font-size:13px; font-weight:600; color:var(--muted); letter-spacing:0; }
+    .an-board-row { display:grid; grid-template-columns:34px minmax(110px,190px) 1fr auto; gap:14px; align-items:center; padding:12px 14px; border-radius:16px; background:var(--surface2); margin-bottom:8px; cursor:pointer; transition:transform .15s,background .15s,box-shadow .15s; border:2px solid transparent; }
+    .an-board-row:hover { transform:translateX(3px); background:var(--primary-pale); }
+    .an-board-row.sel { border-color:var(--primary); background:var(--primary-pale); }
+    .an-board-row.best { background:linear-gradient(90deg,#ecfdf5,#f0fdf4); }
+    .an-board-row.best.sel { border-color:#10b981; }
+    .an-rank { width:30px; height:30px; border-radius:50%; background:var(--surface); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:var(--muted); box-shadow:var(--shadow-sm); }
+    .an-board-row.best .an-rank { background:#10b981; color:#fff; font-size:15px; }
+    .an-store { font-weight:800; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .an-store small { display:block; font-size:12px; font-weight:500; color:var(--muted); }
+    .an-track { height:12px; background:var(--surface); border-radius:8px; overflow:hidden; }
+    .an-track span { display:block; height:100%; border-radius:8px; background:linear-gradient(90deg,#a5b4fc,#6366f1); width:0; transition:width .9s cubic-bezier(.2,.8,.2,1); }
+    .an-board-row.best .an-track span { background:linear-gradient(90deg,#6ee7b7,#10b981); }
+    .an-price { text-align:right; font-weight:800; font-size:18px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .an-price small { display:block; font-size:11.5px; font-weight:600; color:var(--muted); }
+    .an-badge { display:inline-block; font-size:10.5px; font-weight:800; letter-spacing:.3px; text-transform:uppercase; padding:2px 8px; border-radius:20px; margin-left:6px; vertical-align:2px; }
+    .an-badge.green { background:#d1fae5; color:#047857; } .an-badge.mute { background:var(--surface); color:var(--muted); }
+    .an-badge.amber { background:#fef3c7; color:#b45309; }
+    .an-thumb { width:40px; height:50px; border-radius:8px; object-fit:cover; border:1px solid var(--border); cursor:zoom-in; display:block; margin-left:auto; transition:transform .15s,box-shadow .15s; background:var(--surface); }
+    .an-thumb:hover { transform:scale(1.12) rotate(-2deg); box-shadow:var(--shadow); }
+    .an-pdf { width:40px; height:50px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:20px; background:var(--surface); border:1px solid var(--border); cursor:pointer; margin-left:auto; }
+    .an-table td { white-space:nowrap; }
+    .an-table td:nth-child(2) { font-weight:700; }
+    .an-table tbody tr { cursor:default; } .an-table tbody tr:hover { transform:none; }
+    .an-table tbody tr:hover td { background:var(--primary-pale); }
+    .an-table tr.cheap td { background:#ecfdf5; }
+    .an-table td.raw { text-align:left; max-width:240px; overflow:hidden; text-overflow:ellipsis; color:var(--muted); font-size:12.5px; font-weight:500; }
+    .an-empty { text-align:center; padding:54px 24px; }
+    .an-empty .big { font-size:54px; margin-bottom:10px; }
+    .an-empty h3 { font-size:20px; font-weight:800; margin-bottom:6px; }
+    .an-empty p { color:var(--muted); font-size:14px; line-height:1.6; max-width:520px; margin:0 auto 8px; }
+    .an-empty code,.an-how code { background:var(--surface2); border-radius:6px; padding:2px 7px; font-size:12.5px; }
+    .an-spin { width:38px; height:38px; border:3px solid var(--primary-light); border-top-color:var(--primary); border-radius:50%; animation:spin .75s linear infinite; margin:0 auto 14px; }
+    .an-lb { position:fixed; inset:0; background:rgba(15,23,42,.62); backdrop-filter:blur(6px); z-index:2500; display:none; align-items:center; justify-content:center; padding:24px; }
+    .an-lb.open { display:flex; animation:ovUp .2s both; }
+    .an-lb-box { background:var(--surface); border-radius:24px; box-shadow:var(--shadow-lg); width:min(1040px,100%); max-height:92vh; display:grid; grid-template-columns:minmax(0,1.1fr) minmax(300px,1fr); overflow:hidden; }
+    .an-lb-media { background:#0f172a; display:flex; align-items:center; justify-content:center; min-height:300px; overflow:auto; }
+    .an-lb-media img { max-width:100%; max-height:92vh; display:block; }
+    .an-lb-media iframe { width:100%; height:80vh; border:none; background:#fff; }
+    .an-lb-media pre { color:#e2e8f0; font-size:12.5px; padding:20px; white-space:pre-wrap; align-self:flex-start; }
+    .an-lb-side { padding:24px 24px 20px; overflow-y:auto; max-height:92vh; }
+    .an-lb-head { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom:4px; }
+    .an-lb-head h3 { font-size:20px; font-weight:800; letter-spacing:-.3px; }
+    .an-x { border:none; background:var(--surface2); width:34px; height:34px; border-radius:50%; font-size:18px; cursor:pointer; color:var(--muted); flex-shrink:0; }
+    .an-x:hover { background:var(--danger-light); color:var(--danger); }
+    .an-lb-line { display:grid; grid-template-columns:1fr auto; gap:2px 12px; padding:9px 12px; border-radius:12px; font-size:13px; margin-bottom:4px; }
+    .an-lb-line b { font-variant-numeric:tabular-nums; }
+    .an-lb-line small { color:var(--muted); grid-column:1/-1; font-size:11.5px; }
+    .an-lb-line.hl { background:#fef9c3; box-shadow:inset 0 0 0 2px #facc15; }
+    .an-lb-actions { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 6px; }
+    .an-warn { background:var(--warning-light); color:#92400e; border-radius:12px; padding:9px 12px; font-size:12.5px; margin:8px 0; line-height:1.45; }
+    @media (max-width:760px){ .an-lb-box{grid-template-columns:1fr} .an-board-row{grid-template-columns:30px 1fr auto} .an-track{display:none} }
+
     /* ── CARD REWARDS ── */
     .cr-cov { display:flex; height:12px; border-radius:7px; overflow:hidden; background:var(--surface2); margin:6px 0 10px; }
     .cr-cov span { display:block; height:100%; }
@@ -608,6 +685,7 @@
     <div class="nav-tabs">
       <button class="nav-tab active" id="tabbtn-overview" onclick="switchTab('overview')">📊 Overview</button>
       <button class="nav-tab" id="tabbtn-expenses" onclick="switchTab('expenses')">💳 Expenses</button>
+      <button class="nav-tab" id="tabbtn-analysis" onclick="switchTab('analysis')">🛒 Analysis</button>
     </div>
     <div class="nav-actions">
       <span class="nav-count" id="nav-count"></span>
@@ -623,6 +701,15 @@
     </div>
     <div class="ov-chips" id="ov-chips"></div>
     <div id="ov-body"></div>
+  </div>
+
+  <!-- ═══ ANALYSIS TAB (grocery receipts) ═══ -->
+  <div class="main hidden" id="tab-analysis">
+    <div class="ov-hero">
+      <h1 class="ov-h1">Where it's <span>cheapest</span></h1>
+      <button class="btn btn-outline btn-sm" id="an-rescan" onclick="loadAnalysis(true)">↻ Rescan receipts</button>
+    </div>
+    <div id="an-body"></div>
   </div>
   <div class="empty-tab hidden" id="exp-empty"><h2>No expenses loaded</h2><p>Upload an expenses CSV (use “Upload New CSV”) to see the expense dashboard.</p></div>
 
@@ -1030,15 +1117,18 @@ function launchDashboard() {
   switchTab('overview');
 }
 function switchTab(tab){
-  const exp=tab==='expenses',hasExp=state.rows.length>0;
-  document.getElementById('tab-overview').classList.toggle('hidden',exp);
+  const exp=tab==='expenses',ana=tab==='analysis',hasExp=state.rows.length>0;
+  document.getElementById('tab-analysis').classList.toggle('hidden',!ana);
+  document.getElementById('tabbtn-analysis').classList.toggle('active',ana);
+  document.getElementById('tab-overview').classList.toggle('hidden',exp||ana);
   document.getElementById('tab-expenses').classList.toggle('hidden',!exp||!hasExp);
   document.getElementById('exp-empty').classList.toggle('hidden',!exp||hasExp);
-  document.getElementById('tabbtn-overview').classList.toggle('active',!exp);
+  document.getElementById('tabbtn-overview').classList.toggle('active',!exp&&!ana);
   document.getElementById('tabbtn-expenses').classList.toggle('active',exp);
   document.getElementById('nav-count').style.display=exp?'':'none';
   if(exp&&hasExp&&state.expDirty){state.expDirty=false;renderAll();} // render charts only once visible so Chart.js sizes correctly
-  if(!exp)renderOverview();
+  if(!exp&&!ana)renderOverview();
+  if(ana)loadAnalysis();
 }
 
 function populateFilters() {
@@ -2348,6 +2438,216 @@ function renderCardRewards(){
 }
 document.querySelectorAll('#cr-gran button').forEach(b=>b.onclick=()=>{cr.gran=b.dataset.g;cr.sel='';renderCardRewards();});
 document.getElementById('cr-period').onchange=e=>{cr.sel=e.target.value;renderCardRewards();};
+
+/* ═══ ANALYSIS: price per unit across stores, from receipts/ ═══ */
+const an={loaded:false,loading:false,data:null,items:{},list:[],sel:'',unit:'',rank:'avg',sort:'price',store:'',chart:null,hi:0,query:''};
+const ANU={weight:{u:'lb',t:'Per lb'},volume:{u:'gal',t:'Per gal'},count:{u:'each',t:'Per each'},item:{u:'item',t:'Per item'}};
+const AN_COLORS=['#6366f1','#10b981','#f59e0b','#ec4899','#0ea5e9','#8b5cf6','#ef4444','#14b8a6','#84cc16','#f97316'];
+const anP=v=>'$'+(v<1?v.toFixed(3).replace(/0$/,''):v.toFixed(2));
+const anM=v=>(v<0?'−':'')+'$'+Math.abs(v).toFixed(2);
+const anDate=iso=>iso?new Date(iso+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Undated';
+const anQty=n=>(+n.toFixed(2)).toString();
+
+async function loadAnalysis(force){
+  if(an.loading||(an.loaded&&!force))return;
+  an.loading=true;renderAnalysis();
+  try{an.data=await (await fetch('/receipts_data')).json();}
+  catch(e){an.data={receipts:[],warnings:['Could not reach the server: '+e],ocr:{ok:true}};}
+  an.loading=false;an.loaded=true;buildAnalysisItems();renderAnalysis();
+}
+
+function buildAnalysisItems(){
+  an.items={};
+  an.data.receipts.forEach(rc=>(rc.items||[]).forEach(it=>{
+    if(!it.unit_price)return;
+    const g=an.items[it.name]||(an.items[it.name]={name:it.name,group:it.group,matched:it.matched,rows:[]});
+    g.rows.push(Object.assign({},it,{utype:it.kind==='count'&&it.size_known===false?'item':it.kind,store:rc.store||'Unknown store',date:rc.date,dateEst:!!rc.date_from_photo,rid:rc.id,rkind:rc.kind}));
+  }));
+  an.list=Object.values(an.items).map(g=>Object.assign(g,{stores:new Set(g.rows.map(r=>r.store)).size}));
+  an.list.sort((a,b)=>(b.matched-a.matched)||a.group.localeCompare(b.group)||a.name.localeCompare(b.name));
+  if(!an.items[an.sel]){an.sel='';an.unit='';}
+}
+
+function renderAnalysis(){
+  const body=document.getElementById('an-body'),D=an.data;
+  if(an.loading){body.innerHTML='<div class="ov-card an-empty"><div class="an-spin"></div><h3>Reading your receipts…</h3><p>Photos are read once and remembered, so only new receipts take a moment.</p></div>';return;}
+  const total=D.receipts.length,lines=an.list.reduce((t,g)=>t+g.rows.length,0);
+  if(!total){
+    body.innerHTML=`<div class="ov-card an-empty"><div class="big">🧾</div><h3>Drop in your first receipts</h3>
+      <p>Put grocery receipt photos or PDFs in the <code>receipts/</code> folder (next to <code>artifacts/</code>), then press <b>Rescan receipts</b>. The folder is git-ignored, so nothing is ever uploaded.</p>
+      ${D.ocr&&!D.ocr.ok?`<p style="color:#b45309">⚠ ${esc(D.ocr.reason)}</p>`:''}</div>`;return;
+  }
+  if(!lines){
+    body.innerHTML=`<div class="ov-card an-empty"><div class="big">🔍</div><h3>${total} receipt${total>1?'s':''} found, but no items could be read</h3>
+      ${D.ocr&&!D.ocr.ok?`<p style="color:#b45309">⚠ ${esc(D.ocr.reason)}</p>`:''}
+      <p>${D.warnings.slice(0,4).map(esc).join('<br>')}</p><p>Tip: put a <code>.txt</code> file with the same name next to a receipt to give the reader corrected text.</p></div>`;return;
+  }
+  const top=[...an.list].sort((a,b)=>b.rows.length-a.rows.length).slice(0,8);
+  body.innerHTML=`
+    <div class="an-search-wrap">
+      <div class="an-search"><span style="font-size:22px">🔎</span>
+        <input id="an-input" type="text" autocomplete="off" spellcheck="false" placeholder="Search ${an.list.length} grocery items — orange, milk, eggs…">
+        <span class="an-count">${total} receipts · ${lines} items</span></div>
+      <div class="an-list" id="an-list" role="listbox"></div>
+    </div>
+    <div class="an-quick" id="an-quick">${top.map(g=>`<button class="chip ${g.name===an.sel?'sel':''}" data-n="${esc(g.name)}">${esc(g.name)} <small>${g.rows.length}</small></button>`).join('')}</div>
+    <div id="an-result"></div>
+    <div id="an-notes"></div>`;
+  const inp=document.getElementById('an-input');
+  inp.value=an.sel;
+  inp.onfocus=()=>{inp.select();an.query='';anList(true);};
+  inp.oninput=()=>{an.query=inp.value.trim();an.hi=0;anList(true);};
+  inp.onkeydown=e=>{
+    const opts=[...document.querySelectorAll('#an-list .an-opt')];
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();anList(true);an.hi=Math.max(0,Math.min(opts.length-1,an.hi+(e.key==='ArrowDown'?1:-1)));anList(true,true);}
+    else if(e.key==='Enter'&&opts[an.hi]){e.preventDefault();anPick(opts[an.hi].dataset.n);}
+    else if(e.key==='Escape'){anList(false);inp.blur();}
+  };
+  document.getElementById('an-quick').onclick=e=>{const b=e.target.closest('[data-n]');if(b)anPick(b.dataset.n);};
+  anResult();anNotes();
+}
+document.addEventListener('mousedown',e=>{const l=document.getElementById('an-list');if(l&&!e.target.closest('.an-search-wrap'))l.classList.remove('open');});
+
+function anList(open,keepScroll){
+  const list=document.getElementById('an-list');if(!list)return;
+  if(!open){list.classList.remove('open');return;}
+  const q=an.query.toLowerCase().split(/\s+/).filter(Boolean);
+  const hit=g=>q.every(w=>g.name.toLowerCase().includes(w)||g.group.toLowerCase().includes(w));
+  const items=an.list.filter(hit);
+  let html='',lastG='',idx=0;
+  const hl=n=>{let o=esc(n);q.forEach(w=>{o=o.replace(new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>');});return o;};
+  items.forEach(g=>{
+    if(g.group!==lastG){lastG=g.group;html+=`<div class="an-gh">${esc(g.group)}</div>`;}
+    html+=`<div class="an-opt ${idx===an.hi?'hi':''}" data-n="${esc(g.name)}" role="option"><span>${hl(g.name)}</span><small>${g.rows.length} buy${g.rows.length>1?'s':''} · ${g.stores} store${g.stores>1?'s':''}</small></div>`;idx++;
+  });
+  list.innerHTML=html||'<div class="an-none">Nothing matches — try a simpler word.</div>';
+  list.classList.add('open');
+  list.querySelectorAll('.an-opt').forEach(o=>o.onmousedown=e=>{e.preventDefault();anPick(o.dataset.n);});
+  if(keepScroll){const h=list.querySelector('.an-opt.hi');if(h)h.scrollIntoView({block:'nearest'});}
+}
+
+function anPick(name){
+  an.sel=name;an.unit='';an.store='';an.hi=0;
+  const inp=document.getElementById('an-input');if(inp){inp.value=name;inp.blur();}
+  anList(false);
+  document.querySelectorAll('#an-quick .chip').forEach(c=>c.classList.toggle('sel',c.dataset.n===name));
+  anResult();
+}
+
+function anStats(rows){
+  const m={};
+  rows.forEach(r=>{
+    const s=m[r.store]||(m[r.store]={store:r.store,n:0,paid:0,qty:0,min:Infinity,max:0,last:null,rows:[]});
+    s.n++;s.paid+=r.paid;s.qty+=r.unit_qty;s.min=Math.min(s.min,r.unit_price);s.max=Math.max(s.max,r.unit_price);s.rows.push(r);
+    if(!s.last||(r.date||'')>=(s.last.date||''))s.last=r;
+  });
+  return Object.values(m).map(s=>Object.assign(s,{avg:s.paid/s.qty,latest:s.last.unit_price}));
+}
+
+function anResult(){
+  const box=document.getElementById('an-result');if(!box)return;
+  if(an.chart){an.chart.destroy();an.chart=null;}
+  const g=an.items[an.sel];
+  if(!g){box.innerHTML='<div class="ov-card an-empty" style="padding:38px"><div class="big">🥕</div><h3>Pick something to compare</h3><p>Choose an item above to see every store you bought it from, ranked by price per unit.</p></div>';return;}
+  const types=['weight','volume','count','item'].filter(t=>g.rows.some(r=>r.utype===t)).sort((a,b)=>g.rows.filter(r=>r.utype===b).length-g.rows.filter(r=>r.utype===a).length);
+  if(!types.includes(an.unit))an.unit=types[0];
+  const U=ANU[an.unit],rows=g.rows.filter(r=>r.utype===an.unit);
+  const stats=anStats(rows),key={avg:'avg',latest:'latest',best:'min'}[an.rank];
+  stats.sort((a,b)=>a[key]-b[key]);
+  const cheap=stats[0],dear=stats[stats.length-1],multi=stats.length>1;
+  const colorOf={};[...new Set(rows.map(r=>r.store))].forEach((s,i)=>colorOf[s]=AN_COLORS[i%AN_COLORS.length]);
+  const lastBuy=[...rows].sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+  const typical=[...rows].map(r=>r.unit_qty).sort((a,b)=>a-b)[Math.floor(rows.length/2)];
+  const saveAmt=multi?(dear.avg-cheap.avg)*typical:0,savePct=multi?(1-cheap.avg/dear.avg)*100:0;
+  const kpi=(i,icon,l,val,sub,c)=>`<div class="ov-kpi ov-anim" style="--c:${c};--i:${i}"><div class="ov-kpi-top"><div class="ov-kpi-icon">${icon}</div><div class="ov-kpi-label">${l}</div></div><div class="ov-kpi-val" style="font-size:26px">${val}</div><div class="ov-kpi-delta">${sub}</div></div>`;
+  const kpis=[
+    kpi(0,'🏆','Cheapest',esc(cheap.store),`<b class="up">${anP(cheap[key])}</b> ${U.t.toLowerCase()} · ${cheap.n} buy${cheap.n>1?'s':''}`,'#10b981'),
+    multi?kpi(1,'💸','Priciest',esc(dear.store),`<b class="down">${anP(dear[key])}</b> ${U.t.toLowerCase()} · ${dear.n} buy${dear.n>1?'s':''}`,'#f43f5e'):kpi(1,'🏬','Stores','Just one so far','Add receipts from other stores to compare','#f43f5e'),
+    multi?kpi(2,'🎯','Savings potential',savePct.toFixed(0)+'% less',`≈ <b class="up">${anM(saveAmt)}</b> on a typical ${anQty(typical)} ${U.u} buy`,'#6366f1'):kpi(2,'🎯','Savings potential','—','Needs at least two stores','#6366f1'),
+    kpi(3,'🧾','Last bought',anDate(lastBuy.date),`${esc(lastBuy.store)} · ${anP(lastBuy.unit_price)} ${U.t.toLowerCase()}`,'#0ea5e9')
+  ].join('');
+  const max=Math.max(...stats.map(s=>s[key]));
+  const board=stats.map((s,i)=>`<div class="an-board-row ${i===0&&multi?'best':''} ${an.store===s.store?'sel':''}" data-s="${esc(s.store)}">
+      <div class="an-rank">${i===0&&multi?'🏆':i+1}</div>
+      <div class="an-store"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${colorOf[s.store]};margin-right:7px"></span>${esc(s.store)}<small>${s.n} buy${s.n>1?'s':''} · last ${anDate(s.last.date)}</small></div>
+      <div class="an-track"><span data-w="${(s[key]/max*100).toFixed(1)}"></span></div>
+      <div class="an-price">${anP(s[key])}<small>${an.rank==='best'?'best deal':an.rank==='latest'?'latest':'average'} · ${anP(s.min)}–${anP(s.max)}</small></div></div>`).join('');
+  const tableRows=rows.filter(r=>!an.store||r.store===an.store).sort((a,b)=>an.sort==='price'?a.unit_price-b.unit_price:(b.date||'').localeCompare(a.date||''));
+  const minP=Math.min(...rows.map(r=>r.unit_price));
+  const trs=tableRows.map(r=>`<tr class="${r.unit_price===minP?'cheap':''}"><td${r.dateEst?' title="The receipt\'s date was unreadable, so this is when the photo was taken"':''}>${anDate(r.date)}${r.dateEst?'*':''}</td><td>${esc(r.store)}</td>
+      <td class="raw" title="${esc(r.desc)}">${esc(r.desc)}${r.organic?' <span class="an-badge mute">organic</span>':''}</td>
+      <td>${esc(r.qty_label)}</td><td>${anM(r.paid)}</td><td><b>${anP(r.unit_price)}</b>${r.unit_price===minP?' <span class="an-badge green">lowest</span>':''}</td>
+      <td>${r.rkind==='image'?`<img class="an-thumb" loading="lazy" src="/receipt_file/${r.rid}" data-r="${r.rid}" data-l="${r.line}" alt="receipt">`:`<div class="an-pdf" data-r="${r.rid}" data-l="${r.line}">${r.rkind==='pdf'?'📄':'📝'}</div>`}</td></tr>`).join('');
+  const dated=rows.filter(r=>r.date).length;
+  const seg=(id,opts,cur)=>`<div class="seg" id="${id}"><div class="seg-thumb"></div>${opts.map(([v,t])=>`<button data-v="${v}" class="${v===cur?'active':''}">${t}</button>`).join('')}</div>`;
+  box.innerHTML=`
+    <div class="an-seg-row ov-anim"><div class="an-title">${esc(g.name)} <small>${g.group} · ${g.rows.length} purchase${g.rows.length>1?'s':''} across ${g.stores} store${g.stores>1?'s':''}</small></div>
+      ${types.length>1?seg('an-unit',types.map(t=>[t,ANU[t].t]),an.unit):''}</div>
+    ${an.unit==='item'?'<div class="an-warn">These receipts list no size or weight for this item, so prices are per item — compare with care.</div>':''}
+    <div class="ov-kpis">${kpis}</div>
+    <div class="ov-card ov-anim" style="--i:4">
+      <div class="an-seg-row" style="margin-bottom:6px"><div><div class="ov-card-title">Store ranking</div><div class="ov-card-sub" style="margin-bottom:0">Price ${U.t.toLowerCase()} — click a store to filter the purchases below.</div></div>
+        ${seg('an-rank',[['avg','Average'],['latest','Latest'],['best','Best deal']],an.rank)}</div>
+      <div style="margin-top:14px" id="an-board">${board}</div></div>
+    ${dated>=2?`<div class="ov-card ov-anim" style="--i:5"><div class="ov-card-title">Price over time</div><div class="ov-card-sub">Each dot is one purchase, ${U.t.toLowerCase()}.</div><div class="ov-chart" style="height:290px"><canvas id="an-chart"></canvas></div></div>`:''}
+    <div class="ov-card ov-anim" style="--i:6">
+      <div class="an-seg-row" style="margin-bottom:6px"><div><div class="ov-card-title">Every purchase${an.store?` · ${esc(an.store)} <a href="#" id="an-clear" style="font-size:12.5px;color:var(--primary);font-weight:700;margin-left:6px">show all stores</a>`:''}</div><div class="ov-card-sub" style="margin-bottom:0">Tap a receipt to see the photo the numbers came from.</div></div>
+        ${seg('an-sort',[['price','Cheapest first'],['date','Newest first']],an.sort)}</div>
+      <div class="ov-table-wrap"><table class="ov-table an-table"><thead><tr><th>Date</th><th>Store</th><th style="text-align:left">As printed</th><th>Bought</th><th>Paid</th><th>${U.t}</th><th>Receipt</th></tr></thead><tbody>${trs}</tbody></table></div></div>`;
+  box.querySelectorAll('.seg').forEach(sg=>{
+    const act=sg.querySelector('button.active'),th=sg.querySelector('.seg-thumb');
+    const place=()=>{if(act){th.style.setProperty('--w',act.offsetWidth+'px');th.style.setProperty('--x',(act.offsetLeft-4)+'px');}};
+    place();requestAnimationFrame(place);
+    sg.onclick=e=>{const b=e.target.closest('button');if(!b)return;const v=b.dataset.v;
+      if(sg.id==='an-unit'){an.unit=v;an.store='';}else if(sg.id==='an-rank')an.rank=v;else an.sort=v;anResult();};
+  });
+  requestAnimationFrame(()=>box.querySelectorAll('.an-track span').forEach(s=>s.style.width=s.dataset.w+'%'));
+  document.getElementById('an-board').onclick=e=>{const r=e.target.closest('[data-s]');if(r){an.store=an.store===r.dataset.s?'':r.dataset.s;anResult();}};
+  const clr=document.getElementById('an-clear');if(clr)clr.onclick=e=>{e.preventDefault();an.store='';anResult();};
+  box.querySelectorAll('[data-r]').forEach(el=>{if(el.closest('table'))el.onclick=()=>anOpenReceipt(el.dataset.r,+el.dataset.l);});
+  if(dated>=2){
+    const ds=stats.map(s=>({label:s.store,borderColor:colorOf[s.store],backgroundColor:colorOf[s.store],borderWidth:2.5,tension:.25,pointRadius:5,pointHoverRadius:8,
+      data:s.rows.filter(r=>r.date).map(r=>({x:+new Date(r.date+'T00:00:00'),y:r.unit_price,r})).sort((a,b)=>a.x-b.x)}));
+    an.chart=new Chart(document.getElementById('an-chart'),{type:'line',data:{datasets:ds},options:{responsive:true,maintainAspectRatio:false,parsing:false,interaction:{mode:'nearest',intersect:true},
+      scales:{x:{type:'linear',grid:{display:false},ticks:{maxTicksLimit:7,callback:v=>new Date(v).toLocaleDateString('en-US',{month:'short',year:'2-digit'})}},
+              y:{grid:{color:'#eef2f7'},ticks:{callback:v=>'$'+(+v.toFixed(2))}}},
+      plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8}},tooltip:{callbacks:{title:c=>anDate(c[0].raw.r.date),label:c=>`${c.dataset.label}: ${anP(c.raw.y)} ${U.t.toLowerCase()} (${c.raw.r.qty_label})`}}},
+      onClick:(e,els)=>{if(els.length){const r=ds[els[0].datasetIndex].data[els[0].index].r;anOpenReceipt(r.rid,r.line);}}}});
+  }
+}
+
+function anNotes(){
+  const el=document.getElementById('an-notes');if(!el)return;
+  const D=an.data,other=an.list.filter(g=>!g.matched);
+  const bits=[];
+  if(D.ocr&&!D.ocr.ok)bits.push(`<li>⚠ ${esc(D.ocr.reason)}</li>`);
+  D.warnings.forEach(w=>bits.push(`<li>${esc(w)}</li>`));
+  if(other.length)bits.push(`<li><b>${other.length} item${other.length>1?'s':''} aren't in the grocery catalog yet</b> (listed under “Other”): ${other.slice(0,12).map(g=>esc(g.name)).join(', ')}${other.length>12?'…':''}. Add them to <code>grocery_catalog.json</code> to group them properly.</li>`);
+  el.innerHTML=`<details class="ov-card an-how"><summary>How receipts are read${bits.length?` · ${bits.length} note${bits.length>1?'s':''}`:''}</summary>
+    <div style="margin-top:12px;font-size:13.5px;line-height:1.65;color:var(--muted)">
+      <p>Photos are cut out of their background and read with a local OCR engine (RapidOCR, with Tesseract as backup), PDFs by their text layer — no LLM, nothing leaves your computer. Each photo is read several ways and the readings vote; the result is accepted when the items add up to the receipt's own subtotal. Each line is matched to an item using <code>grocery_catalog.json</code>, and sizes (<code>12CT</code>, <code>1 GAL</code>, <code>2.1 lb @ 0.79/lb</code>) are converted to $/lb, $/gal or $/each. Unit prices use the amount actually paid, after coupons.</p>
+      <p style="margin-top:8px">Wrong or missing text? Put a <code>.txt</code> with the same name beside the receipt and fix the lines — it overrides the OCR. Items without a size on the receipt are compared “per item” only.</p>
+      ${bits.length?`<ul style="margin:10px 0 0 18px">${bits.join('')}</ul>`:''}</div></details>`;
+}
+
+function anOpenReceipt(rid,line){
+  const rc=an.data.receipts.find(r=>r.id===rid);if(!rc)return;
+  let lb=document.getElementById('an-lb');
+  if(!lb){lb=document.createElement('div');lb.id='an-lb';lb.className='an-lb';document.body.appendChild(lb);
+    lb.onclick=e=>{if(e.target===lb||e.target.closest('.an-x'))lb.classList.remove('open');};
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')lb.classList.remove('open');});}
+  const media=rc.kind==='image'?`<img src="/receipt_file/${rid}" alt="receipt">`:rc.kind==='pdf'?`<iframe src="/receipt_file/${rid}"></iframe>`:'<pre id="an-lb-pre">Loading…</pre>';
+  const lines=(rc.items||[]).map(it=>`<div class="an-lb-line ${it.line===line?'hl':''}"><span>${esc(it.desc)}</span><b>${anM(it.paid)}</b>
+      <small>${esc(it.name)} · ${esc(it.qty_label)} · ${anP(it.unit_price)} ${it.kind==='weight'?'per lb':it.kind==='volume'?'per gal':'each'}${it.discount?` · coupon ${anM(it.discount)}`:''}</small></div>`).join('');
+  lb.innerHTML=`<div class="an-lb-box"><div class="an-lb-media">${media}</div><div class="an-lb-side">
+    <div class="an-lb-head"><div><h3>${esc(rc.store||'Receipt')}</h3><div class="ov-card-sub" style="margin:2px 0 0">${anDate(rc.date)} · ${esc(rc.file)}</div></div><button class="an-x" aria-label="Close">✕</button></div>
+    <div class="an-lb-actions"><a class="btn btn-outline btn-sm" href="/receipt_file/${rid}?original=1" target="_blank" rel="noopener">Open original ↗</a><a class="btn btn-outline btn-sm" href="/receipt_text/${rid}" target="_blank" rel="noopener">Text the reader saw ↗</a></div>
+    ${(rc.warnings||[]).map(w=>`<div class="an-warn">${esc(w)}</div>`).join('')}
+    <div class="ov-card-title" style="font-size:14px;margin:12px 0 8px">${(rc.items||[]).length} items read from this receipt</div>${lines}</div></div>`;
+  lb.classList.add('open');
+  const hl=lb.querySelector('.an-lb-line.hl');if(hl)hl.scrollIntoView({block:'center'});
+  if(rc.kind==='text')fetch('/receipt_text/'+rid).then(r=>r.text()).then(t=>{const p=document.getElementById('an-lb-pre');if(p)p.textContent=t;});
+}
 
 function resetUpload(){
   document.getElementById('dashboard').classList.add('hidden');

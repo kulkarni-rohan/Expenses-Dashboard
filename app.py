@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, Response, abort, jsonify, render_template, request, send_file
 import csv
 import io
 import json
 import os
 import re
+
+import receipts
 
 app = Flask(__name__)
 
@@ -264,6 +266,48 @@ def artifacts_data():
         if ignored:
             out['warnings'].append('Ignored extra CSVs: ' + ', '.join(ignored))
     return jsonify(out)
+
+
+RECEIPTS_DIR = os.environ.get('EXPENSE_RECEIPTS_DIR') or os.path.join(os.path.dirname(os.path.abspath(__file__)), 'receipts')
+os.makedirs(RECEIPTS_DIR, exist_ok=True)  # git-ignored (see .gitignore): holds your private receipt photos / PDFs
+_receipt_paths = {}
+
+
+@app.route('/receipts_data')
+def receipts_data():
+    """Read every receipt in receipts/ (OCR results are cached on disk) and return parsed grocery line items."""
+    data = receipts.scan_receipts(RECEIPTS_DIR)
+    _receipt_paths.clear()
+    _receipt_paths.update({r['id']: os.path.join(RECEIPTS_DIR, r['file']) for r in data['receipts']})
+    return jsonify(data)
+
+
+def _receipt_path(rid):
+    if rid not in _receipt_paths:
+        receipts_data()
+    path = _receipt_paths.get(rid)
+    if not path or not os.path.abspath(path).startswith(os.path.abspath(RECEIPTS_DIR) + os.sep):
+        abort(404)
+    return path
+
+
+@app.route('/receipt_file/<rid>')
+def receipt_file(rid):
+    """Serve the original receipt (HEIC photos are converted to JPEG so browsers can show them)."""
+    path = _receipt_path(rid)
+    if not request.args.get('original'):      # default: the receipt cut out of its background
+        crop = receipts.cropped_path(path, os.path.join(RECEIPTS_DIR, '.cache'))
+        if crop:
+            return send_file(crop)
+    if os.path.splitext(path)[1].lower() in ('.heic', '.heif'):
+        return Response(receipts.jpeg_bytes(path), mimetype='image/jpeg')
+    return send_file(path)
+
+
+@app.route('/receipt_text/<rid>')
+def receipt_text(rid):
+    """The text the parser actually saw for this receipt (handy for spotting OCR mistakes)."""
+    return Response(receipts.raw_text(_receipt_path(rid), RECEIPTS_DIR), mimetype='text/plain; charset=utf-8')
 
 
 @app.route('/upload', methods=['POST'])

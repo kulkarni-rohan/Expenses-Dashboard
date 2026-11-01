@@ -3,6 +3,7 @@
 
 # Local data — never commit
 artifacts/
+receipts/.cache/
 
 # Python
 __pycache__/
